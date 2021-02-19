@@ -1,112 +1,94 @@
-const MIN_DELTA = 0.5;
+function Tracker()
+{
+    // controller class for a physical model and it's visual representation
 
-function Component(color, x, y) {
-    
-    this.x = x;
-    this.y = y;
-    this.color = color;    
-    
-    this.newPos = function(x, y) {        
-        this.x = x;
-        this.y = y;
+    this.view = new Cursor('red', 0, 0);
+    this.timestep = 20;
+    this.model = new Model(this.timestep, [0, 100, 0, 0], [10, 0]);
+
+    this.update = function() {
+        this.model.update();
+        this.state = this.model.getOutput();
+        this.view.setPos(this.state.x, this.state.y);        
     }
 
-}
-
-function Dot(radius, color, x, y){
-    Component.call(this, color, x, y);
-    this.radius = radius
-
-    this.render = function(ctx) {
-        ctx.save();        
-        ctx.translate(this.x, this.y);       
-        
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
-        ctx.fill()
-        ctx.stroke()
-        ctx.restore();    
+    this.render = function(ctx){
+        this.view.render(ctx)
     }
 }
 
+function Model(timestep, initialState, initialInput)
+{
+    // state is x, y, vx, vy
+    this.state = initialState;
+    // input is Fx, Fy
+    this.input = initialInput;
+    this.timestep = timestep;
+    
+    // Physical parameters of the model
+    this.mass = 100;
+    this.drag = 1;
 
-function Tracker(color, x, y) {
-    Component.call(this, color, x, y);
+    // A matrix describes system
+    this.A = [
+        [1, 0, this.timestep, 0],
+        [0, 1, 0, this.timestep],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ];
 
-    this.dx = 0;
-    this.dy = 0;
-    this.speed = 5;
-    this.angle = 0;    
+    // B matrix translates input to state
+    this.B = [
+        [0, 0],
+        [0, 0],
+        [this.timestep / this.mass, 0],
+        [0, this.timestep / this.mass]
+    ];
 
-    this.render = function(ctx) {
-        ctx.save();        
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle + Math.PI / 2);
-        ctx.beginPath();
-        
-        ctx.fillStyle = color;
-        ctx.strokeStyle = 'black';      
+    // C matrix translates state to ouput
+    // This can be used to scale output to the display
+    this.C = [
+        0.001, 0.001, 0.001, 0.001
+    ];
 
-        // create chevron
-        ctx.moveTo(0, 20);
-        ctx.lineTo(-10,-5);
-        ctx.lineTo(0, 0);
-        ctx.lineTo(10,-5);
-        ctx.lineTo(0,20);
-        
-        ctx.fill()
-        ctx.stroke()
-        ctx.restore();    
+
+    this.getOutput = function() {       
+        var result = {
+            x: this.C[0] * this.state[0],
+            y: this.C[0] * this.state[1],
+            vx: this.C[0] * this.state[2],
+            vy: this.C[0] *this.state[3]
+        }
+
+        return result;
     }
 
-    this.newPos = function(x, y) {        
-        console.log(`${this.x} ${this.y}`)
+    this.update = function() {
+        var oldState = [];
+        var acc;
 
-        this.dx = x - this.x;
-        this.dy = y - this.y;
-            
-        this.angle = Math.atan(this.dy / this.dx)       
+        // deep copy the state
+        for(i = 0; i < this.state.length; i++){
+            oldState[i] = this.state[i];
+        }
 
-        // ensure angle is correct in other quadrants
-        if(this.dx > 0){
-            this.angle += Math.PI;
-        }        
-
-        // only move if there is enough delta
-        if(Math.abs(this.dy) > MIN_DELTA && Math.abs(this.dx) > MIN_DELTA)
+        for(i = 0; i < this.state.length; i++)
         {
-            this.x += Math.sign(this.dx) * this.speed * Math.abs(Math.cos(this.angle));
-            this.y += Math.sign(this.dy) * this.speed * Math.abs(Math.sin(this.angle));
+            acc = 0;
+
+            // Multiply by dynamic matrix
+            for(j = 0; j < this.state.length; j++)
+            {
+                acc += this.A[i][j] * oldState[j]                
+            }
+         
+            // Add inputs
+            for(k = 0; k < this.input.length; k++)
+            {
+                acc += this.B[i][k] * this.input[k];
+            }
+ 
+            this.state[i] = acc;
         }
     }
-}
-
-function Obstacle(x, y, width, height){
-    Component.call(this,'grey', x, y);
-
-    this.width = width;
-    this.height = height;
-    this.color = 'grey'
-    
-    this.render = function(ctx){
-        ctx.save();           
-        ctx.fillStyle = this.color;        
-        ctx.fillRect(this.x, this.y, this.width, this.height)
-        
-        ctx.strokeStyle = 'black'
-        ctx.strokeRect(this.x, this.y, this.width, this.height)
-
-        ctx.restore();    
-    }
-
-    // check collision between this and line defined by points a and b
-    this.collideLine = function(a, b){
-        
-    }
-
-    this.collideBox = function(box){
-
-    }
-
 }
