@@ -101,3 +101,11 @@ body{
     font-weight: 900;
     font-family: Manuale, sans-serif;
 }
+
+.controls {
+    background-color: beige; 
+    border-radius: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: 'black';
+}

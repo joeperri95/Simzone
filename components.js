@@ -90,3 +90,15 @@ function Rectangle(color, x, y, width, height){
         ctx.restore();    
     }
 }
+
+function Point(x, y)
+{
+    this.x = x;
+    this.y = y;
+}
+
+function Line(p1, p2)
+{
+    this.start = p1;
+    this.end = p2;   
+}

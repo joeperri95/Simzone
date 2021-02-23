@@ -3,13 +3,12 @@
 function getCursorPosition(canvas, event) 
 {
     const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top    
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;  
     return {'x' : x, 'y' : y};
 }
 
 function getDistance(a, b)
-// get absolute distance between two points
 {
     
     var dx = Math.abs(a.x - b.x);
@@ -19,7 +18,6 @@ function getDistance(a, b)
 }
 
 function drawline(ctx, a, b, color)
-// draw a line between point a and point b
 {
     ctx.save();        
     ctx.beginPath();
@@ -28,7 +26,7 @@ function drawline(ctx, a, b, color)
 
     ctx.moveTo(a.x, a.y);
     ctx.lineTo(b.x, b.y);    
-    ctx.stroke()
+    ctx.stroke();
     ctx.restore();    
 }
 
@@ -39,8 +37,17 @@ function drawCircle(ctx, a, rad)
     ctx.strokeStyle = 'black';
     ctx.beginPath();
     ctx.arc(a.x, a.y, rad, 0, 2 * Math.PI);    
-    ctx.stroke()
+    ctx.stroke();
     ctx.restore();   
+}
+
+function inCircle(a, origin, rad)
+// check if point a is in circle defined by origin, rad
+{
+    
+    let delta = Math.sqrt(Math.pow(Math.abs(origin.x - a.x), 2) + Math.pow(Math.abs(origin.y - a.y), 2))
+    return delta < rad
+
 }
 
 function inRectangle(a, x, y, w, h)
@@ -72,11 +79,9 @@ function lineToLine(Astart, Aend, Bstart, Bend)
     {
         
         var result = {
-            'collision' : true,
-            'x1' : (Bstart.x + uB * (Bend.x - Bstart.x)),
-            'y1' : (Bstart.y + uB * (Bend.y - Bstart.y)),
-            'x2' : (Astart.x + uA * (Aend.x - Astart.x)),
-            'y2' : (Astart.y + uA * (Aend.y - Astart.y))
+            collision : true,
+            x : (Bstart.x + uB * (Bend.x - Bstart.x)),
+            y : (Bstart.y + uB * (Bend.y - Bstart.y))
         }    
     
         return result;
@@ -87,14 +92,44 @@ function lineToLine(Astart, Aend, Bstart, Bend)
     }    
 }
 
+function circleToLine(Acenter, Aradius, Bstart, Bend)
+{
+    
+}
+
+
+// this only checks if there is an intersection, not the points
+function lineToCircle(Astart, Aend, Bcenter, Bradius)
+{
+    var dy = Aend.y - Astart.y;
+    var dx = Aend.x - Astart.x;
+
+    var angle = Math.atan2(dy, dx);
+
+    var newStart = {
+        x: Bcenter.x - Bradius * Math.cos(angle),
+        y: Bcenter.y - Bradius * Math.sin(angle),
+    }
+
+    return getDistance(newStart, Astart) < Bradius
+
+}
+
 function lineToBox(Astart, Aend, x, y, w, h)
 {
-    var result;
+    var result = {
+        l0: null,
+        l1: null,
+        l2: null,
+        l3: null,
+        collision: false
+    };
 
-    result = lineToLine(Astart, Aend, {'x': x, 'y': y}, {'x': x, 'y': y + h});
-    result = result || lineToLine(Astart, Aend, {'x': x, 'y': y}, {'x': x + w, 'y': y});
-    result = result || lineToLine(Astart, Aend, {'x': x + w, 'y': y}, {'x': x + w, 'y': y + h});
-    result = result || lineToLine(Astart, Aend, {'x': x, 'y': y + h}, {'x': x + w, 'y': y + h});
+    result.l0 = lineToLine(Astart, Aend, {'x': x, 'y': y}, {'x': x, 'y': y + h});
+    result.l1 = lineToLine(Astart, Aend, {'x': x, 'y': y}, {'x': x + w, 'y': y});
+    result.l2 = lineToLine(Astart, Aend, {'x': x + w, 'y': y}, {'x': x + w, 'y': y + h});
+    result.l3 =  lineToLine(Astart, Aend, {'x': x, 'y': y + h}, {'x': x + w, 'y': y + h});
+    result.collision = result.l0.collision || result.l1.collision || result.l2.collision || result.l3.collision
 
     return result;
 }

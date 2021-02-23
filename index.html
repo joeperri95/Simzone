@@ -1,38 +1,67 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Joe's Site</title>
-        <link rel="stylesheet" href='styles.css'>
-        <link href='https://fonts.googleapis.com/css?family=Manuale' rel='stylesheet'>
-        <script src='components.js'></script>
-        <script src='utils.js'></script>
-        <script src='tracking.js'></script>
-        <script src='main.js'></script>
-        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-        <meta content="utf-8" http-equiv="encoding">
 
-    </head>
-    <body>
+<head>
+    <title>Joe's fatman site</title>
+    <link rel="stylesheet" href='styles.css'>
+    <link href='https://fonts.googleapis.com/css?family=Manuale' rel='stylesheet'>
+    <script src='utils.js'></script>
+    <script src='components.js'></script>
+    <script src='scenarios.js'></script>
+    <script src='tracking.js'></script>
+    <script src='main.js'></script>
+    <script src='controls.js'></script>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
 
-        <div class='page-container'>
-            <div id='title-block' class='content-section'>
-                
-                    <h1 class='content-section-title'>Joe's Site</h1>
-                    <hr>
-                
-            </div>
+</head>
 
-            <div class='content-section'>
-                <h2 class='content-section-title'> The Zone </h2>                                
-                <button onclick="startGame()">Go</button>
+<body onload="startGame()">
+
+    <div class='page-container'>
+        <div id='title-block' class='content-section'>
+
+            <h1 class='content-section-title'>Joe's Site</h1>
+            <hr>
+
+        </div>
+        <div class='content-section'>
+            <h2 class='content-section-title'> The Zone - WIP </h2>
+            <div>
                 <div>
-                <canvas id='the-zone' class='outlined' width="800" height="400">
-                </canvas>   
-                <input type='range' min='1' max='100' value='50' class='slider'>
-            </div>
+                    <canvas id='the-zone' class='outlined inline' width="600" height="400">
+                    </canvas>
+
+                    <div id='control-panel' class='controls inline'>
+                        <h2>Control panel</h2>
+                        <button onclick="startGame()">Restart</button>
+                        <button onclick="clearIt()">Clear</button>
+                        <select onchange="onInputChange()" name="Tool" id='tool'>
+                            <option value="normal" selected>Normal</option>
+                            <option value="beacon">Beacon</option>
+                            <option value="obstacle">Obstacle</option>
+                        </select>
+                        <div class='slider-container'>
+                            <p>Number of rays</p>
+                            <input type='range' min='1' max='360' value='10' class='slider' onchange="raySliderChange()"
+                                id='ray-slider'>
+                        </div>
+                        <div class='slider-container'>
+                            <p>Propagation speed</p>
+                            <input type='range' min='1' max='10' value='5' class='slider' onchange="speedSliderChange()"
+                                id='speed-slider'>
+                        </div>
+                        <select onchange="scenarioChange()" name="Scenario" id='scenario'>
+                            <option value="model" selected>Model chasing</option>
+                            <option value="dev">Development</option>                        
+                        </select>
+           
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-    </body>
+</body>
 
 </html>
