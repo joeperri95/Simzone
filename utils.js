@@ -97,7 +97,6 @@ function circleToLine(Acenter, Aradius, Bstart, Bend)
     
 }
 
-
 // this only checks if there is an intersection, not the points
 function lineToCircle(Astart, Aend, Bcenter, Bradius)
 {

@@ -14,12 +14,15 @@ function Component(color, x, y) {
 function Dot(radius, color, x, y){
     Component.call(this, color, x, y);
     this.radius = radius
+    this.midpoint = {x: x, y: y};
+    this.firstTime = true;
+    this.color = color
 
     this.render = function(ctx) {
         ctx.save();        
         ctx.translate(this.x, this.y);       
         
-        ctx.fillStyle = color;
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
         ctx.fill()
@@ -35,9 +38,7 @@ function Cursor(color, x, y) {
     this.dx = 0;
     this.dy = 0;
     this.speed = 5;
-    this.angle = 0;    
-
-    const MIN_DELTA = 0.5;
+    this.angle = 0;        
 
     this.render = function(ctx) {
         ctx.save();                

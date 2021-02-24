@@ -8,7 +8,7 @@ function Tracker()
 
     this.update = function() {
         this.model.update();
-        this.state = this.model.getOutput();
+        this.state = this.model.getOutput();        
         this.view.setPos(this.state.x, this.state.y);        
     }
 

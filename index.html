@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Joe's fatman site</title>
+    <title>Joe's site</title>
     <link rel="stylesheet" href='styles.css'>
     <link href='https://fonts.googleapis.com/css?family=Manuale' rel='stylesheet'>
     <script src='utils.js'></script>
@@ -36,7 +36,7 @@
                         <h2>Control panel</h2>
                         <button onclick="startGame()">Restart</button>
                         <button onclick="clearIt()">Clear</button>
-                        <select onchange="onInputChange()" name="Tool" id='tool'>
+                        <select name="Tool" id='tool'>
                             <option value="normal" selected>Normal</option>
                             <option value="beacon">Beacon</option>
                             <option value="obstacle">Obstacle</option>
@@ -52,8 +52,9 @@
                                 id='speed-slider'>
                         </div>
                         <select onchange="scenarioChange()" name="Scenario" id='scenario'>
-                            <option value="model" selected>Model chasing</option>
-                            <option value="dev">Development</option>                        
+                            <option value="ideal" selected>Ideal chasing</option>
+                            <option value='model'>Model based</option>
+                            <option value="occlusion">Occlusions</option>                        
                         </select>
            
                     </div>

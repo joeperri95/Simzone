@@ -1,4 +1,5 @@
 // entry points for various scenarios to test
+'use strict';
 
 function Scenario() {
     start = function () { };
@@ -6,158 +7,199 @@ function Scenario() {
     update = function () { };
 }
 
-function models() {
+class IdealTrack {
+    
+    constructor()
+    {
+        this.scene = new Scene();
+        this.tracker = new Cursor("red", 0, 0);
+        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);        
+        this.INTERVAL = 20;
+        
+    }
 
-    start = function () {
+    start() {
 
-        tracker = new Cursor("red", 0, 0);
-        // tracker2 = new Tracker();
-        mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);
-        initialize();
+        this.scene.canvas.addEventListener("mousemove", (event) => {
 
-        for (i = 0; i < NUM_STATIONS; i++) {
-            stations[i] = new Dot(DOT_SIZE, "blue", Math.floor(Math.random() * CANVAS_WIDTH), Math.floor(Math.random() * CANVAS_HEIGHT))
-        }
-
-        obstacle = new Rectangle('grey', 200, 150, 50, 25);
-
-        scene = new Scene();
-        scene.start();
-        setInterval(function () {
-            rad += 1
-        }, 10);
-
-        this.interval = setInterval(this.update, 20);
-
-        scene.canvas.addEventListener("mousemove", (event) => {
-
-            var mouse = getCursorPosition(scene.canvas, event);
-            mouseCursor.x = mouse['x'];
-            mouseCursor.y = mouse['y'];
+            var mouse = getCursorPosition(this.scene.canvas, event);
+            this.mouseCursor.x = mouse['x'];
+            this.mouseCursor.y = mouse['y'];
         })
+
+        // https://stackoverflow.com/a/2749272/14591588        
+        this.interval = setInterval(
+            (function(self) {         
+                return function() {   
+                    self.update(); 
+                }
+            })(this),
+            this.INTERVAL
+        );        
     }
 
-    update = function () {
-        scene.clear();
-        tracker.newPos(mouseCursor.x, mouseCursor.y);
-        tracker.render(scene.context);
-
-        for (i = 0; i < NUM_STATIONS; i++) {
-            stations[i].render(scene.context)
-            drawline(scene.context, stations[i], mouseCursor, 'black');
-            drawCircle(scene.context, stations[i], rad); //getDistance(stations[i], mouseCursor));
-        }
-        mouseCursor.render(scene.context);
-        obstacle.render(scene.context);
+    update() {
+        this.scene.clear();
+        this.tracker.newPos(this.mouseCursor.x, this.mouseCursor.y);
+        this.tracker.render(this.scene.context);
+        this.mouseCursor.render(this.scene.context);
+        
     }
 
-    stop = function () {
+    stop() {
         clearInterval(this.interval);
     }
 
 }
 
+class Occlusion {
 
-function dev() {
-    this.start = function () {
+    constructor(){
 
-        gamestate = 'normal'
-        tracker = new Tracker("red", 225, 225);
-        mouseCursor = new Dot(5, "green", 10, 10);
-
+        // context for scenario        
+        //this.tracker = new Tracker("red", 225, 225);
+        this.mouseCursor = new Dot(DOT_SIZE, "green", 10, 10);
+        this.stations = [];
+        this.obstacles = [];
+        this.rad = 0;
+        this.scene = new Scene();
+        this.gamestate = 'normal';
+        this.INTERVAL = 20;
+    
+    }
+    
+    start() {
+        
+        var radtick = setInterval(
+            (function(self) {         
+                return function() {   
+                    if(self.stations.length > 0){
+                self.rad += SPEED;
+                if(self.rad >= Math.sqrt(Math.pow(CANVAS_WIDTH, 2) + Math.pow(CANVAS_HEIGHT, 2))){
+                    self.rad = 0;
+                }
+            }
+            else{
+                self.rad = 0;
+            }
+                }
+            })(this),
+            100
+        );
+                    
         // place beacons in random locations
-        for (i = 0; i < NUM_STATIONS; i++) {
-            stations[i] = new Dot(5, "blue", Math.floor(Math.random() * 600), Math.floor(Math.random() * 400))
+        for (var i = 0; i < NUM_STATIONS; i++) {
+            this.stations[i] = new Dot(DOT_SIZE, "blue", Math.floor(Math.random() * this.scene.width), Math.floor(Math.random() * this.scene.height));
         }
-
-
-        setInterval(function () {
-            rad += 1;
-        }, 100)
-
-        scene = new Scene();
-        scene.start();
-
-        this.interval = setInterval(this.update, 20);
-
-        scene.canvas.addEventListener('mousedown', (event) => {
-
-            var mouse = getCursorPosition(scene.canvas, event);
-
-            if (gamestate == 'obstacle') {
-                obstacles.push(new Obstacle(mouse.x, mouse.y, 50, 30));
+        
+        var tool = document.getElementById('tool');
+        var self = this
+        
+        tool.addEventListener('change', function() {
+            let value = tool.value;
+            if(value == 'normal')
+            {
+                self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);        
+                self.gamestate = 'normal';
             }
-            else if (gamestate == 'beacon') {
-                stations.push(new Dot(5, 'blue', mouse.x, mouse.y));
+            else if(value == 'beacon')
+            {
+                self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);        
+                self.gamestate = 'beacon';
+            }
+            else if(value == 'obstacle')
+            {
+                self.mouseCursor = new Rectangle('grey', self.mouseCursor.x, self.mouseCursor.y, 50, 30);
+                self.gamestate = 'obstacle'
+            }
+            else
+            {
+                self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
+            }
+        })    
+
+        // handle mousedown event
+        this.scene.canvas.addEventListener('mousedown', (event) => {
+
+            var mouse = getCursorPosition(this.scene.canvas, event);
+
+            if (this.gamestate == 'obstacle') {
+                this.obstacles.push(new Rectangle('grey', mouse.x, mouse.y, 50, 30));
+            }
+            else if (this.gamestate == 'beacon') {
+                this.stations.push(new Dot(5, 'blue', mouse.x, mouse.y));
             }
         })
 
-        scene.canvas.addEventListener("mousemove", (event) => {
+        // handle mousemove event
+        this.scene.canvas.addEventListener("mousemove", (event) => {
 
-            var mouse = getCursorPosition(scene.canvas, event);
-            mouseCursor.x = mouse['x'];
-            mouseCursor.y = mouse['y'];
+            var mouse = getCursorPosition(this.scene.canvas, event);
+            this.mouseCursor.x = mouse['x'];
+            this.mouseCursor.y = mouse['y'];
         })
+
+
+        // https://stackoverflow.com/a/2749272/14591588        
+        this.interval = setInterval(
+            (function(self) {         
+                return function() {   
+                    self.update(); 
+                }
+            })(this),
+            this.INTERVAL
+        );
     }
 
-    this.update = function() {
-    
-        if(gamestate == 'paused'){
-            return;
-        }
-    
-        scene.frameNo += 1;
-        scene.clear();    
-        
-        // lines that update the tracker which is a separate thing right now
-        //tracker.newPos(mouseCursor.x, mouseCursor.y);
-        //tracker.render(scene.context);
-    
-        for(i=0;i<stations.length;i++){
+    update() {
+
+        this.scene.clear();    
+            
+        for(var i = 0; i < this.stations.length;i++){
             
             // This checks if cursor is within beacon radius
             // This is not currently working
-            drawCircle(scene.context, stations[i], rad);
-            if(inCircle(stations[i], mouseCursor, rad))
+            drawCircle(this.scene.context, this.stations[i], this.rad);
+            
+            if(inCircle(this.mouseCursor, this.stations[i] , this.rad))
             {
-                stations[i].color = 'green';
+                this.stations[i].color = 'green';
                 
-                if(stations[i].firstTime){
-                    console.log({station: stations[i], frame: scene.frameNo});                
-                    stations[i].firstTime = false;
+                if(this.stations[i].firstTime){
+                    this.stations[i].firstTime = false;
                 }
                 
             }
             else
             {
-                stations[i].color = 'blue';
+                this.stations[i].color = 'blue';
             }        
     
             var nocollides = 0;
             
             // check line of sight occulusion with obstacles
-            for(j=0; j<obstacles.length; j++){
+            for(var j=0; j< this.obstacles.length; j++){
     
-                var coll = lineToBox(stations[i], mouseCursor,  obstacles[j].x, obstacles[j].y, obstacles[j].width, obstacles[j].height);                        
+                var coll = lineToBox(this.stations[i], this.mouseCursor,  this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);                        
                             
-                for(k = 0; k < RAYS; k++){
+                for(var k = 0; k < RAYS; k++){
                     let angels = (2.0 * k) / RAYS * Math.PI; 
-                    let pointonline = {x: (stations[i].x + rad * Math.cos(angels)), y: (stations[i].y + rad * Math.sin(angels))};          
+                    let pointonline = {x: (this.stations[i].x + this.rad * Math.cos(angels)), y: (this.stations[i].y + this.rad * Math.sin(angels))};          
     
-                    var raycoll = lineToBox(stations[i], pointonline,  obstacles[j].x, obstacles[j].y, obstacles[j].width, obstacles[j].height);                        
+                    var raycoll = lineToBox(this.stations[i], pointonline,  this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);                        
                     if( raycoll.collision){
                         
                         if(raycoll.l0.collision){
-                            drawline(scene.context, stations[i], {x : raycoll.l0.x, y : raycoll.l0.y }, 'black')
+                            drawline(this.scene.context, this.stations[i], {x : raycoll.l0.x, y : raycoll.l0.y }, 'black')
                         }
                         if(raycoll.l1.collision){
-                            drawline(scene.context, stations[i], {x : raycoll.l1.x, y : raycoll.l1.y }, 'black')
+                            drawline(this.scene.context, this.stations[i], {x : raycoll.l1.x, y : raycoll.l1.y }, 'black')
                         }
                         if(raycoll.l2.collision){
-                            drawline(scene.context, stations[i], {x : raycoll.l2.x, y : raycoll.l2.y }, 'black')
+                            drawline(this.scene.context, this.stations[i], {x : raycoll.l2.x, y : raycoll.l2.y }, 'black')
                         }
                         if(raycoll.l3.collision){
-                            drawline(scene.context, stations[i], {x : raycoll.l3.x, y : raycoll.l3.y }, 'black')
+                            drawline(this.scene.context, this.stations[i], {x : raycoll.l3.x, y : raycoll.l3.y }, 'black')
                         }
                     }
                     else{
@@ -172,22 +214,20 @@ function dev() {
                         There is a bug here. If there are multiple occlusions the line may stop at the wrong one
                         Need to find the smallest distance before drawing the line
                     */
-    
-    
                     if(coll.l0.collision){
-                        drawline(scene.context, stations[i], {x : coll.l0.x, y : coll.l0.y }, 'black')
+                        drawline(this.scene.context, this.stations[i], {x : coll.l0.x, y : coll.l0.y }, 'black')
                     }
                     if(coll.l1.collision){
-                        drawline(scene.context, stations[i], {x : coll.l1.x, y : coll.l1.y }, 'black')
+                        drawline(this.scene.context, this.stations[i], {x : coll.l1.x, y : coll.l1.y }, 'black')
                     }
                     if(coll.l2.collision){
-                        drawline(scene.context, stations[i], {x : coll.l2.x, y : coll.l2.y }, 'black')
+                        drawline(this.scene.context, this.stations[i], {x : coll.l2.x, y : coll.l2.y }, 'black')
                     }
                     if(coll.l3.collision){
-                        drawline(scene.context, stations[i], {x : coll.l3.x, y : coll.l3.y }, 'black')
+                        drawline(this.scene.context, this.stations[i], {x : coll.l3.x, y : coll.l3.y }, 'black')
                     }
-    
-                    stations[i].color = 'red'
+                    
+                    this.stations[i].color = 'red'
                     
                 }
     
@@ -197,26 +237,74 @@ function dev() {
                 }
             }
     
-            if(nocollides == obstacles.length)
+            if(nocollides == this.obstacles.length)
             {
-                drawline(scene.context,  stations[i], mouseCursor, 'black');
+                drawline(this.scene.context,  this.stations[i], this.mouseCursor, 'black');
             }
-            //drawCircle(scene.context, stations[i], getDistance(stations[i], mouseCursor));
-            stations[i].render(scene.context)
+                        
+            this.stations[i].render(this.scene.context)
         }
     
-        for(i=0;i<obstacles.length;i++){
-            obstacles[i].render(scene.context);
+        for(var i=0;i<this.obstacles.length;i++){
+            this.obstacles[i].render(this.scene.context);
         }    
-    
-        // drawCircle(scene.context, mouseCursor, rad);
-        mouseCursor.render(scene.context);        
+            
+        this.mouseCursor.render(this.scene.context);        
     }
 
-    this.stop = function () {
+    stop() {
         clearInterval(this.interval);
     }
+}
 
+class ModelScenario{
+    constructor()
+    {
+        this.scene = new Scene();
+        this.tracker = new Tracker();
+        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);        
+        this.INTERVAL = 20;
+    }
+    start() {
 
+        this.scene.canvas.addEventListener("mousemove", (event) => {
 
+            var mouse = getCursorPosition(this.scene.canvas, event);
+            this.mouseCursor.x = mouse['x'];
+            this.mouseCursor.y = mouse['y'];
+        })
+
+        // https://stackoverflow.com/a/2749272/14591588        
+        this.interval = setInterval(
+            (function(self) {         
+                return function() {   
+                    self.update(); 
+                }
+            })(this),
+            this.INTERVAL
+        );        
+    }
+
+    update() {
+        this.scene.clear();
+        this.tracker.update();
+        this.tracker.render(this.scene.context);
+        this.mouseCursor.render(this.scene.context);
+        
+    }
+
+    stop() {
+        clearInterval(this.interval);
+    }
+}
+
+class RayTracing{
+    constructor()
+    {
+
+    }
+
+    start = function () { };
+    stop = function () { };
+    update = function () { };
 }
