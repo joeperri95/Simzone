@@ -29,9 +29,10 @@
             <h2 class='content-section-title'> The Zone - WIP </h2>
             <div>
                 <div>
-                    <canvas id='the-zone' class='outlined inline' width="600" height="400">
+                    <div class='outlined inline' style='padding: 0px; margin: 0px;'>
+                    <canvas id='the-zone' class='' style='padding: 0px; margin: 0px;' width="600" height="400">
                     </canvas>
-
+                    </div>
                     <div id='control-panel' class='controls inline'>
                         <h2>Control panel</h2>
                         <button onclick="startGame()">Restart</button>
@@ -54,7 +55,12 @@
                         <select onchange="scenarioChange()" name="Scenario" id='scenario'>
                             <option value="ideal" selected>Ideal chasing</option>
                             <option value='model'>Model based</option>
-                            <option value="occlusion">Occlusions</option>                        
+                            <option value="occlusion">Occlusions</option>   
+                            <option value="area">Area construction</option>   
+                            <option value="graph">Graphs</option>   
+                            <option value="beacons">Beacons</option>   
+                            <option value="rays">Rays</option>   
+                            <option value="dev">In Development</option>                        
                         </select>
            
                     </div>

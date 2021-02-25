@@ -95,6 +95,29 @@ class Occlusion {
         var tool = document.getElementById('tool');
         var self = this
         
+
+        
+        if(tool.value == 'normal')
+        {
+            self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);        
+            self.gamestate = 'normal';
+        }
+        else if(tool.value == 'beacon')
+        {
+            self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);        
+            self.gamestate = 'beacon';
+        }
+        else if(tool.value == 'obstacle')
+        {
+            self.mouseCursor = new Rectangle('grey', self.mouseCursor.x, self.mouseCursor.y, 50, 30);
+            self.gamestate = 'obstacle'
+        }
+        else
+        {
+            self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
+        }
+
+
         tool.addEventListener('change', function() {
             let value = tool.value;
             if(value == 'normal')
@@ -307,4 +330,97 @@ class RayTracing{
     start = function () { };
     stop = function () { };
     update = function () { };
+}
+
+class CreateAreaScenario{
+    constructor()
+    {
+        this.scene = new Scene();
+        this.points = [];
+        this.selected;
+        this.INTERVAL = 20;
+    }
+
+    start = function() {
+
+        this.scene.canvas.addEventListener('mousemove', (event) => {
+
+            var mouse = getCursorPosition(this.scene.canvas, event);  
+            
+            this.selected.setPos(mouse)
+
+            for(let i = 0; i < this.points.length; i++){
+                if(inCircle(mouse, this.points[i], this.points[i].radius)){
+                    this.points[i].color = 'green'
+                }
+                else{
+                    this.points[i].color = 'grey'
+                }
+            } 
+        })
+
+        // handle mousedown event
+        this.scene.canvas.addEventListener('mousedown', (event) => {
+
+            var mouse = getCursorPosition(this.scene.canvas, event);  
+
+            if(this.selected != null){
+                this.selected = null;
+            }
+
+            for(let i = 0; i < this.points.length; i++){
+                if(inCircle(mouse, this.points[i], this.points[i].radius)){
+                    this.selected = this.points[i]
+                }                
+            } 
+            this.points.push(new Dot(5, 'grey', mouse['x'], mouse['y']));
+
+        })
+
+
+        // https://stackoverflow.com/a/2749272/14591588        
+        this.interval = setInterval(
+            (function(self) {         
+                return function() {   
+                    self.update(); 
+                }
+            })(this),
+            this.INTERVAL
+        ); 
+    }
+
+    stop = function () {
+        clearInterval(this.interval);
+    }
+
+    update = function() {
+        this.scene.clear();
+        
+        if(this.points.length >= 2){
+
+            this.scene.context.save();
+            this.scene.context.fillStyle = 'red';
+            this.scene.context.strokeStyle = 'red';
+            this.scene.context.beginPath();
+            this.scene.context.moveTo(this.points[0].x, this.points[0].y);
+
+            for(let i = 1; i < this.points.length; i++){
+                this.scene.context.lineTo(this.points[i].x, this.points[i].y);
+            }
+
+            this.scene.context.lineTo(this.points[0].x, this.points[0].y);
+            this.scene.context.stroke();
+            this.scene.context.fill();
+            this.scene.context.restore();
+
+            for(let i = 0; i < this.points.length; i++){
+                this.points[i].render(this.scene.context);                                
+            }
+
+        }
+        else if(this.points.length == 1)
+        {
+            this.points[0].render(this.scene.context);
+        }
+    }
 }

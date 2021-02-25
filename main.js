@@ -12,27 +12,11 @@ var scenarioChoice
 function startGame() {
     scenarioChoice = document.getElementById('scenario')
     let value = scenarioChoice.value;
-
-    if(scenario != null){        
-        scenario.stop();
-        delete scenario;
-    }
-
-    if(value == 'ideal'){
-        scenario = new IdealTrack();        
-        scenario.start()
-    }
-    else if(value == 'occlusion'){
-        scenario = new Occlusion();
-        scenario.start()
-    }    
-    else if(value == 'model'){
-        scenario = new ModelScenario();
-        scenario.start();
-    }
+    newScenario(value);
 }
 
 function Scene() {
+
     this.canvas = document.getElementById("the-zone"),    
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
@@ -48,7 +32,11 @@ function Scene() {
 function scenarioChange()
 {
     let value = scenarioChoice.value;
+    newScenario(value);
+}
 
+
+function newScenario(value){
     if(scenario != null){        
         scenario.stop();
         delete scenario;
@@ -66,14 +54,19 @@ function scenarioChange()
         scenario = new ModelScenario();
         scenario.start();
     }
-}
-
-function raySliderChange()
-{
-    RAYS = document.getElementById('ray-slider').value
-}
-
-function speedSliderChange()
-{
-    SPEED = Number(document.getElementById('speed-slider').value)    
+    else if(value == 'area'){
+        scenario = new CreateAreaScenario();
+        scenario.start();
+    }
+    else if(value == 'graph'){
+        
+        // scenario.start();
+    }
+    else if(value == 'beacons'){
+        
+        // scenario.start();
+    }
+    else if(value == 'dev'){
+        // scenario.start();
+    }
 }

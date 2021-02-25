@@ -9,22 +9,27 @@ function Component(color, x, y) {
         this.x = x;
         this.y = y;
     }
+
+    this.setPos = function(point) {        
+        this.x = point.x;
+        this.y = point.y;
+    }
+
 }
 
 function Dot(radius, color, x, y){
     Component.call(this, color, x, y);
-    this.radius = radius
-    this.midpoint = {x: x, y: y};
+    this.radius = radius    
     this.firstTime = true;
-    this.color = color
+    this.color = color    
 
     this.render = function(ctx) {
-        ctx.save();        
-        ctx.translate(this.x, this.y);       
+        ctx.save();   
+
         
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fill()
         ctx.stroke()
         ctx.restore();    
@@ -36,7 +41,7 @@ function Cursor(color, x, y) {
     Component.call(this, color, x, y);
 
     this.dx = 0;
-    this.dy = 0;
+    this.dy = 0;    
     this.speed = 5;
     this.angle = 0;        
 
@@ -78,12 +83,12 @@ function Rectangle(color, x, y, width, height){
 
     this.width = width;
     this.height = height;
-    this.color = color
+    this.color = color    
     
     this.render = function(ctx){
         ctx.save();           
         ctx.fillStyle = this.color;        
-        ctx.fillRect(this.x, this.y, this.width, this.height)
+        ctx.fillRect(this.x - this.width, this.y, this.width, this.height)
         
         ctx.strokeStyle = 'black'
         ctx.strokeRect(this.x, this.y, this.width, this.height)

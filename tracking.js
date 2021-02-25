@@ -1,3 +1,5 @@
+'use-strict'
+
 function Tracker()
 {
     // controller class for a physical model and it's visual representation
@@ -15,6 +17,28 @@ function Tracker()
     this.render = function(ctx){
         this.view.render(ctx)
     }
+}
+
+
+function Beacon(x, y, period){
+
+    // controller class for a beacon which emanates pulses
+
+    this.view = new Dot(5, 'blue', x, y)
+    this.period = period;
+    this.pulses = [];
+    this.active = true;
+    
+]
+
+    this.update = function() {
+
+    }
+
+    this.render = function(ctx){
+        this.view.render(ctx)
+    }
+
 }
 
 function Model(timestep, initialState, initialInput)
@@ -91,4 +115,5 @@ function Model(timestep, initialState, initialInput)
             this.state[i] = acc;
         }
     }
+
 }

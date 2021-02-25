@@ -2,9 +2,10 @@
 
 function getCursorPosition(canvas, event) 
 {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;  
+    const rect = canvas.getBoundingClientRect() 
+    const x = Math.floor(event.clientX - rect.left);
+    const y = Math.floor(event.clientY - rect.top);  
+    console.log(x, y)
     return {'x' : x, 'y' : y};
 }
 
