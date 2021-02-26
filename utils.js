@@ -4,8 +4,7 @@ function getCursorPosition(canvas, event)
 {
     const rect = canvas.getBoundingClientRect() 
     const x = Math.floor(event.clientX - rect.left);
-    const y = Math.floor(event.clientY - rect.top);  
-    console.log(x, y)
+    const y = Math.floor(event.clientY - rect.top);      
     return {'x' : x, 'y' : y};
 }
 

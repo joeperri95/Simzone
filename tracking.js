@@ -28,8 +28,6 @@ function Beacon(x, y, period){
     this.period = period;
     this.pulses = [];
     this.active = true;
-    
-]
 
     this.update = function() {
 

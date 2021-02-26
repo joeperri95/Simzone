@@ -8,14 +8,13 @@ function Scenario() {
 }
 
 class IdealTrack {
-    
-    constructor()
-    {
+
+    constructor() {
         this.scene = new Scene();
         this.tracker = new Cursor("red", 0, 0);
-        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);        
+        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);
         this.INTERVAL = 20;
-        
+
     }
 
     start() {
@@ -29,13 +28,13 @@ class IdealTrack {
 
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
-            (function(self) {         
-                return function() {   
-                    self.update(); 
+            (function (self) {
+                return function () {
+                    self.update();
                 }
             })(this),
             this.INTERVAL
-        );        
+        );
     }
 
     update() {
@@ -43,7 +42,7 @@ class IdealTrack {
         this.tracker.newPos(this.mouseCursor.x, this.mouseCursor.y);
         this.tracker.render(this.scene.context);
         this.mouseCursor.render(this.scene.context);
-        
+
     }
 
     stop() {
@@ -54,7 +53,7 @@ class IdealTrack {
 
 class Occlusion {
 
-    constructor(){
+    constructor() {
 
         // context for scenario        
         //this.tracker = new Tracker("red", 225, 225);
@@ -65,81 +64,73 @@ class Occlusion {
         this.scene = new Scene();
         this.gamestate = 'normal';
         this.INTERVAL = 20;
-    
+
     }
-    
+
     start() {
-        
+
         var radtick = setInterval(
-            (function(self) {         
-                return function() {   
-                    if(self.stations.length > 0){
-                self.rad += SPEED;
-                if(self.rad >= Math.sqrt(Math.pow(CANVAS_WIDTH, 2) + Math.pow(CANVAS_HEIGHT, 2))){
-                    self.rad = 0;
-                }
-            }
-            else{
-                self.rad = 0;
-            }
+            (function (self) {
+                return function () {
+                    if (self.stations.length > 0) {
+                        self.rad += SPEED;
+                        if (self.rad >= Math.sqrt(Math.pow(CANVAS_WIDTH, 2) + Math.pow(CANVAS_HEIGHT, 2))) {
+                            self.rad = 0;
+                        }
+                    }
+                    else {
+                        self.rad = 0;
+                    }
                 }
             })(this),
             100
         );
-                    
+
         // place beacons in random locations
         for (var i = 0; i < NUM_STATIONS; i++) {
             this.stations[i] = new Dot(DOT_SIZE, "blue", Math.floor(Math.random() * this.scene.width), Math.floor(Math.random() * this.scene.height));
         }
-        
+
         var tool = document.getElementById('tool');
         var self = this
-        
 
-        
-        if(tool.value == 'normal')
-        {
-            self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);        
+
+
+        if (tool.value == 'normal') {
+            self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
             self.gamestate = 'normal';
         }
-        else if(tool.value == 'beacon')
-        {
-            self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);        
+        else if (tool.value == 'beacon') {
+            self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);
             self.gamestate = 'beacon';
         }
-        else if(tool.value == 'obstacle')
-        {
+        else if (tool.value == 'obstacle') {
             self.mouseCursor = new Rectangle('grey', self.mouseCursor.x, self.mouseCursor.y, 50, 30);
             self.gamestate = 'obstacle'
         }
-        else
-        {
+        else {
             self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
         }
 
 
-        tool.addEventListener('change', function() {
+        tool.addEventListener('change', function () {
             let value = tool.value;
-            if(value == 'normal')
-            {
-                self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);        
+            if (value == 'normal') {
+                self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
                 self.gamestate = 'normal';
             }
-            else if(value == 'beacon')
-            {
-                self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);        
+            else if (value == 'beacon') {
+                self.mouseCursor = new Dot(5, "blue", self.mouseCursor.x, self.mouseCursor.y);
                 self.gamestate = 'beacon';
             }
-            else if(value == 'obstacle')
-            {
+            else if (value == 'obstacle') {
                 self.mouseCursor = new Rectangle('grey', self.mouseCursor.x, self.mouseCursor.y, 50, 30);
                 self.gamestate = 'obstacle'
             }
-            else
-            {
+            else {
                 self.mouseCursor = new Dot(5, "green", self.mouseCursor.x, self.mouseCursor.y);
             }
-        })    
+        })
 
         // handle mousedown event
         this.scene.canvas.addEventListener('mousedown', (event) => {
@@ -165,9 +156,9 @@ class Occlusion {
 
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
-            (function(self) {         
-                return function() {   
-                    self.update(); 
+            (function (self) {
+                return function () {
+                    self.update();
                 }
             })(this),
             this.INTERVAL
@@ -176,103 +167,94 @@ class Occlusion {
 
     update() {
 
-        this.scene.clear();    
-            
-        for(var i = 0; i < this.stations.length;i++){
-            
+        this.scene.clear();
+
+        for (var i = 0; i < this.stations.length; i++) {
+
             // This checks if cursor is within beacon radius
             // This is not currently working
             drawCircle(this.scene.context, this.stations[i], this.rad);
-            
-            if(inCircle(this.mouseCursor, this.stations[i] , this.rad))
-            {
+
+            if (inCircle(this.mouseCursor, this.stations[i], this.rad)) {
                 this.stations[i].color = 'green';
-                
-                if(this.stations[i].firstTime){
-                    this.stations[i].firstTime = false;
-                }
-                
             }
-            else
-            {
+            else {
                 this.stations[i].color = 'blue';
-            }        
-    
+            }
+
             var nocollides = 0;
-            
+
             // check line of sight occulusion with obstacles
-            for(var j=0; j< this.obstacles.length; j++){
-    
-                var coll = lineToBox(this.stations[i], this.mouseCursor,  this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);                        
-                            
-                for(var k = 0; k < RAYS; k++){
-                    let angels = (2.0 * k) / RAYS * Math.PI; 
-                    let pointonline = {x: (this.stations[i].x + this.rad * Math.cos(angels)), y: (this.stations[i].y + this.rad * Math.sin(angels))};          
-    
-                    var raycoll = lineToBox(this.stations[i], pointonline,  this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);                        
-                    if( raycoll.collision){
-                        
-                        if(raycoll.l0.collision){
-                            drawline(this.scene.context, this.stations[i], {x : raycoll.l0.x, y : raycoll.l0.y }, 'black')
+            for (var j = 0; j < this.obstacles.length; j++) {
+
+                var coll = lineToBox(this.stations[i], this.mouseCursor, this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);
+
+                for (var k = 0; k < RAYS; k++) {
+                    let angels = (2.0 * k) / RAYS * Math.PI;
+                    let pointonline = { x: (this.stations[i].x + this.rad * Math.cos(angels)), y: (this.stations[i].y + this.rad * Math.sin(angels)) };
+
+                    var raycoll = lineToBox(this.stations[i], pointonline, this.obstacles[j].x, this.obstacles[j].y, this.obstacles[j].width, this.obstacles[j].height);
+                    if (raycoll.collision) {
+
+                        if (raycoll.l0.collision) {
+                            drawline(this.scene.context, this.stations[i], { x: raycoll.l0.x, y: raycoll.l0.y }, 'black')
                         }
-                        if(raycoll.l1.collision){
-                            drawline(this.scene.context, this.stations[i], {x : raycoll.l1.x, y : raycoll.l1.y }, 'black')
+                        if (raycoll.l1.collision) {
+                            drawline(this.scene.context, this.stations[i], { x: raycoll.l1.x, y: raycoll.l1.y }, 'black')
                         }
-                        if(raycoll.l2.collision){
-                            drawline(this.scene.context, this.stations[i], {x : raycoll.l2.x, y : raycoll.l2.y }, 'black')
+                        if (raycoll.l2.collision) {
+                            drawline(this.scene.context, this.stations[i], { x: raycoll.l2.x, y: raycoll.l2.y }, 'black')
                         }
-                        if(raycoll.l3.collision){
-                            drawline(this.scene.context, this.stations[i], {x : raycoll.l3.x, y : raycoll.l3.y }, 'black')
+                        if (raycoll.l3.collision) {
+                            drawline(this.scene.context, this.stations[i], { x: raycoll.l3.x, y: raycoll.l3.y }, 'black')
                         }
                     }
-                    else{
+                    else {
                         //drawline(scene.context, stations[i], pointonline, 'black')
                     }
                 }
-    
-                if(coll.collision)
-                {
-                    
+
+                if (coll.collision) {
+
                     /*
                         There is a bug here. If there are multiple occlusions the line may stop at the wrong one
                         Need to find the smallest distance before drawing the line
                     */
-                    if(coll.l0.collision){
-                        drawline(this.scene.context, this.stations[i], {x : coll.l0.x, y : coll.l0.y }, 'black')
+                    if (coll.l0.collision) {
+                        drawline(this.scene.context, this.stations[i], { x: coll.l0.x, y: coll.l0.y }, 'black')
                     }
-                    if(coll.l1.collision){
-                        drawline(this.scene.context, this.stations[i], {x : coll.l1.x, y : coll.l1.y }, 'black')
+                    if (coll.l1.collision) {
+                        drawline(this.scene.context, this.stations[i], { x: coll.l1.x, y: coll.l1.y }, 'black')
                     }
-                    if(coll.l2.collision){
-                        drawline(this.scene.context, this.stations[i], {x : coll.l2.x, y : coll.l2.y }, 'black')
+                    if (coll.l2.collision) {
+                        drawline(this.scene.context, this.stations[i], { x: coll.l2.x, y: coll.l2.y }, 'black')
                     }
-                    if(coll.l3.collision){
-                        drawline(this.scene.context, this.stations[i], {x : coll.l3.x, y : coll.l3.y }, 'black')
+                    if (coll.l3.collision) {
+                        drawline(this.scene.context, this.stations[i], { x: coll.l3.x, y: coll.l3.y }, 'black')
                     }
-                    
+
                     this.stations[i].color = 'red'
-                    
+
                 }
-    
+
                 // This keeps track to see if there is a line of sight
-                else{
+                else {
                     nocollides += 1;
                 }
             }
-    
-            if(nocollides == this.obstacles.length)
-            {
-                drawline(this.scene.context,  this.stations[i], this.mouseCursor, 'black');
+
+            if (nocollides == this.obstacles.length) {
+                drawline(this.scene.context, this.stations[i], this.mouseCursor, 'black');
             }
-                        
+
             this.stations[i].render(this.scene.context)
         }
-    
-        for(var i=0;i<this.obstacles.length;i++){
+
+        for (var i = 0; i < this.obstacles.length; i++) {
             this.obstacles[i].render(this.scene.context);
-        }    
-            
-        this.mouseCursor.render(this.scene.context);        
+        }
+
+        this.mouseCursor.render(this.scene.context);
     }
 
     stop() {
@@ -280,12 +262,11 @@ class Occlusion {
     }
 }
 
-class ModelScenario{
-    constructor()
-    {
+class ModelScenario {
+    constructor() {
         this.scene = new Scene();
         this.tracker = new Tracker();
-        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);        
+        this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);
         this.INTERVAL = 20;
     }
     start() {
@@ -299,13 +280,13 @@ class ModelScenario{
 
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
-            (function(self) {         
-                return function() {   
-                    self.update(); 
+            (function (self) {
+                return function () {
+                    self.update();
                 }
             })(this),
             this.INTERVAL
-        );        
+        );
     }
 
     update() {
@@ -313,7 +294,7 @@ class ModelScenario{
         this.tracker.update();
         this.tracker.render(this.scene.context);
         this.mouseCursor.render(this.scene.context);
-        
+
     }
 
     stop() {
@@ -321,9 +302,8 @@ class ModelScenario{
     }
 }
 
-class RayTracing{
-    constructor()
-    {
+class RayTracing {
+    constructor() {
 
     }
 
@@ -332,47 +312,50 @@ class RayTracing{
     update = function () { };
 }
 
-class CreateAreaScenario{
-    constructor()
-    {
+class CreateAreaScenario {
+    constructor() {
         this.scene = new Scene();
         this.points = [];
         this.selected;
         this.INTERVAL = 20;
     }
 
-    start = function() {
+    start = function () {
 
         this.scene.canvas.addEventListener('mousemove', (event) => {
 
-            var mouse = getCursorPosition(this.scene.canvas, event);  
-            
-            this.selected.setPos(mouse)
+            var mouse = getCursorPosition(this.scene.canvas, event);
 
-            for(let i = 0; i < this.points.length; i++){
-                if(inCircle(mouse, this.points[i], this.points[i].radius)){
+            if (this.selected != null) {
+                this.selected.setPos(mouse)
+            }
+
+            for (let i = 0; i < this.points.length; i++) {
+                if (inCircle(mouse, this.points[i], this.points[i].radius)) {
                     this.points[i].color = 'green'
                 }
-                else{
+                else {
                     this.points[i].color = 'grey'
                 }
-            } 
+            }
         })
 
         // handle mousedown event
         this.scene.canvas.addEventListener('mousedown', (event) => {
 
-            var mouse = getCursorPosition(this.scene.canvas, event);  
+            var mouse = getCursorPosition(this.scene.canvas, event);
 
-            if(this.selected != null){
+            if (this.selected != null) {
                 this.selected = null;
+                return;
             }
 
-            for(let i = 0; i < this.points.length; i++){
-                if(inCircle(mouse, this.points[i], this.points[i].radius)){
+            for (let i = 0; i < this.points.length; i++) {
+                if (inCircle(mouse, this.points[i], this.points[i].radius)) {
                     this.selected = this.points[i]
-                }                
-            } 
+                    return;
+                }
+            }
             this.points.push(new Dot(5, 'grey', mouse['x'], mouse['y']));
 
         })
@@ -380,31 +363,31 @@ class CreateAreaScenario{
 
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
-            (function(self) {         
-                return function() {   
-                    self.update(); 
+            (function (self) {
+                return function () {
+                    self.update();
                 }
             })(this),
             this.INTERVAL
-        ); 
+        );
     }
 
     stop = function () {
         clearInterval(this.interval);
     }
 
-    update = function() {
+    update = function () {
         this.scene.clear();
-        
-        if(this.points.length >= 2){
+
+        if (this.points.length >= 2) {
 
             this.scene.context.save();
             this.scene.context.fillStyle = 'red';
-            this.scene.context.strokeStyle = 'red';
+            this.scene.context.strokeStyle = 'black';
             this.scene.context.beginPath();
             this.scene.context.moveTo(this.points[0].x, this.points[0].y);
 
-            for(let i = 1; i < this.points.length; i++){
+            for (let i = 1; i < this.points.length; i++) {
                 this.scene.context.lineTo(this.points[i].x, this.points[i].y);
             }
 
@@ -413,14 +396,14 @@ class CreateAreaScenario{
             this.scene.context.fill();
             this.scene.context.restore();
 
-            for(let i = 0; i < this.points.length; i++){
-                this.points[i].render(this.scene.context);                                
+            for (let i = 0; i < this.points.length; i++) {
+                this.points[i].render(this.scene.context);
             }
 
         }
-        else if(this.points.length == 1)
-        {
+        else if (this.points.length == 1) {
             this.points[0].render(this.scene.context);
         }
     }
 }
+

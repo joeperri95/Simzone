@@ -17,7 +17,7 @@ function startGame() {
 
 function Scene() {
 
-    this.canvas = document.getElementById("the-zone"),    
+    this.canvas = document.getElementById("the-zone");    
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
     this.width = CANVAS_WIDTH;
@@ -27,6 +27,12 @@ function Scene() {
     this.clear = function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+}
+
+function ControlPanel() {
+
+    this.panel = document.getElementById("control-panel")
+    
 }
 
 function scenarioChange()
@@ -59,8 +65,8 @@ function newScenario(value){
         scenario.start();
     }
     else if(value == 'graph'){
-        
-        // scenario.start();
+        scenario = new GraphScenario();
+        scenario.start();
     }
     else if(value == 'beacons'){
         
