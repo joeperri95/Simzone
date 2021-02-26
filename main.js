@@ -10,21 +10,29 @@ var scenario;
 var scenarioChoice
 
 function startGame() {
-    scenarioChoice = document.getElementById('scenario')
-    let value = scenarioChoice.value;
-    newScenario(value);
+
+    if (window.location.hash != "") {
+        let value = window.location.hash.replace(/#/g, '');
+        console.log(value);
+        newScenario(value);
+    }
+    else {
+        scenarioChoice = document.getElementById('scenario')
+        let value = scenarioChoice.value;
+        newScenario(value);
+    }
 }
 
 function Scene() {
 
-    this.canvas = document.getElementById("the-zone");    
+    this.canvas = document.getElementById("the-zone");
     this.canvas.width = CANVAS_WIDTH;
     this.canvas.height = CANVAS_HEIGHT;
     this.width = CANVAS_WIDTH;
     this.height = CANVAS_HEIGHT;
-    this.context = this.canvas.getContext("2d");                
+    this.context = this.canvas.getContext("2d");
 
-    this.clear = function() {
+    this.clear = function () {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
@@ -32,47 +40,46 @@ function Scene() {
 function ControlPanel() {
 
     this.panel = document.getElementById("control-panel")
-    
+
 }
 
-function scenarioChange()
-{
+function scenarioChange() {
     let value = scenarioChoice.value;
     newScenario(value);
 }
 
 
-function newScenario(value){
-    if(scenario != null){        
+function newScenario(value) {
+    if (scenario != null) {
         scenario.stop();
         delete scenario;
     }
 
-    if(value == 'ideal'){
-        scenario = new IdealTrack();        
+    if (value == 'ideal') {
+        scenario = new IdealTrack();
         scenario.start()
     }
-    else if(value == 'occlusion'){
+    else if (value == 'occlusion') {
         scenario = new Occlusion();
         scenario.start()
-    }    
-    else if(value == 'model'){
+    }
+    else if (value == 'model') {
         scenario = new ModelScenario();
         scenario.start();
     }
-    else if(value == 'area'){
+    else if (value == 'area') {
         scenario = new CreateAreaScenario();
         scenario.start();
     }
-    else if(value == 'graph'){
+    else if (value == 'graph') {
         scenario = new GraphScenario();
         scenario.start();
     }
-    else if(value == 'beacons'){
-        
+    else if (value == 'beacons') {
+
         // scenario.start();
     }
-    else if(value == 'dev'){
+    else if (value == 'dev') {
         // scenario.start();
     }
 }
