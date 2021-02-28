@@ -41,13 +41,22 @@ function drawCircle(ctx, a, rad)
     ctx.restore();   
 }
 
+function drawArc(ctx, a, rad, start, end)
+// draw a circle around point a
+{
+    ctx.save();        
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(a.x, a.y, rad, start, end);    
+    ctx.stroke();
+    ctx.restore();   
+}
+
 function inCircle(a, origin, rad)
 // check if point a is in circle defined by origin, rad
-{
-    
+{   
     let delta = Math.sqrt(Math.pow(Math.abs(origin.x - a.x), 2) + Math.pow(Math.abs(origin.y - a.y), 2))
     return delta < rad
-
 }
 
 function inRectangle(a, x, y, w, h)
@@ -92,11 +101,6 @@ function lineToLine(Astart, Aend, Bstart, Bend)
     }    
 }
 
-function circleToLine(Acenter, Aradius, Bstart, Bend)
-{
-    
-}
-
 // this only checks if there is an intersection, not the points
 function lineToCircle(Astart, Aend, Bcenter, Bradius)
 {
@@ -112,6 +116,11 @@ function lineToCircle(Astart, Aend, Bcenter, Bradius)
 
     return getDistance(newStart, Astart) < Bradius
 
+}
+
+function linePolygon(Astart, Aend, lines)
+{
+    
 }
 
 function lineToBox(Astart, Aend, x, y, w, h)

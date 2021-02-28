@@ -1,4 +1,4 @@
-var RAYS = 10;
+var RAYS = 50;
 var SPEED = 10;
 const NUM_STATIONS = 5
 const NUM_OBSTACLES = 1;
@@ -12,8 +12,7 @@ var scenarioChoice
 function startGame() {
 
     if (window.location.hash != "") {
-        let value = window.location.hash.replace(/#/g, '');
-        console.log(value);
+        let value = window.location.hash.replace(/#/g, '');        
         newScenario(value);
     }
     else {
@@ -76,8 +75,8 @@ function newScenario(value) {
         scenario.start();
     }
     else if (value == 'beacons') {
-
-        // scenario.start();
+        scenario = new BeaconTestScenario();
+        scenario.start();
     }
     else if (value == 'dev') {
         // scenario.start();
