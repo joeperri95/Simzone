@@ -30,6 +30,25 @@ function drawline(ctx, a, b, color)
     ctx.restore();    
 }
 
+function drawArrow(ctx, p1, p2, color){
+ 
+        ctx.save();           
+        let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
+        ctx.strokeStyle = color;
+        ctx.beginPath()                
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        
+        const SIZE = 10; // Length of arrow head lines
+        const ANGLE = Math.PI / 6; // Angle from head of arrow
+
+        ctx.lineTo(p2.x - SIZE * Math.cos(ANGLE + angle), p2.y  - SIZE * Math.sin(ANGLE + angle));
+        ctx.moveTo(p2.x, p2.y);
+        ctx.lineTo(p2.x - SIZE * Math.cos(angle - ANGLE), p2.y  - SIZE * Math.sin(angle - ANGLE));
+        ctx.stroke();
+        ctx.restore();    
+}
+
 function drawCircle(ctx, a, rad)
 // draw a circle around point a
 {

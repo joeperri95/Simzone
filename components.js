@@ -10,11 +10,6 @@ function Component(color, x, y) {
     this.y = y;
     this.color = color;    
     
-    this.setPos = function(x, y) {        
-        this.x = x;
-        this.y = y;
-    }
-
     this.setPos = function(point) {        
         this.x = point.x;
         this.y = point.y;
@@ -76,7 +71,6 @@ function Cursor(color, x, y) {
         this.angle = Math.atan2(this.dy, this.dx)       
         this.x += this.speed * Math.cos(this.angle);
         this.y += this.speed * Math.sin(this.angle);
-
     }
 }
 

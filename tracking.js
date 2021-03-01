@@ -6,12 +6,13 @@ function Tracker()
 
     this.view = new Cursor('red', 0, 0);
     this.timestep = 20;
-    this.model = new Model(this.timestep, [0, 100, 0, 0], [10, 0]);
+    this.model = new Model(this.timestep, [0, 100, 0, 0], [0, 9.8]);
 
     this.update = function() {
         this.model.update();
         this.state = this.model.getOutput();        
-        this.view.setPos(this.state.x, this.state.y);        
+        console.log(this.state)
+        this.view.setPos(this.state);        
     }
 
     this.render = function(ctx){
@@ -49,19 +50,20 @@ function Model(timestep, initialState, initialInput)
 
     // C matrix translates state to ouput
     // This can be used to scale output to the display
-    this.C = [
-        0.001, 0.001, 0.001, 0.001
-    ];
+    // this.C = [
+    //     0.001, 0.001, 0.001, 0.001
+    // ];
+
+    this.C = [1, 1, 1, 1];
 
 
     this.getOutput = function() {       
         var result = {
             x: this.C[0] * this.state[0],
-            y: this.C[0] * this.state[1],
-            vx: this.C[0] * this.state[2],
-            vy: this.C[0] *this.state[3]
+            y: this.C[1] * this.state[1],
+            vx: this.C[2] * this.state[2],
+            vy: this.C[3] * this.state[3]
         }
-
         return result;
     }
 
@@ -73,7 +75,6 @@ function Model(timestep, initialState, initialInput)
         for(i = 0; i < this.state.length; i++){
             oldState[i] = this.state[i];
         }
-
         for(i = 0; i < this.state.length; i++)
         {
             acc = 0;
