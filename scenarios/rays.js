@@ -1,6 +1,4 @@
-class RayScenario {
-    // Proving the beacon class below works
-    // To be deleted    
+class RayScenario {    
 
     constructor() {
         this.mouseCursor = new Dot(DOT_SIZE, "green", 10, 10);
@@ -16,7 +14,7 @@ class RayScenario {
 
         // place beacons in random locations
         for (var i = 0; i < NUM_STATIONS; i++) {
-            this.beacons[i] = new beacon(Math.floor(Math.random() * this.scene.width), Math.floor(Math.random() * this.scene.height), 2);
+            this.beacons[i] = new beacon(Math.floor(Math.random() * this.scene.width), Math.floor(Math.random() * this.scene.height), 2 );
             this.beacons[i].start();
         }
 
@@ -125,8 +123,7 @@ class RayScenario {
         this.scene.clear();
         this.frameNo += 1;
 
-        for (var i = 0; i < this.beacons.length; i++) {
-            // This checks if cursor is within beacon radius                        
+        for (var i = 0; i < this.beacons.length; i++) {                                   
 
             var collisions = [];
             var firstCollide = {};
@@ -222,7 +219,7 @@ class RayScenario {
             this.obstacles[i].render(this.scene.context);
         }
 
-        this.mouseCursor.render(this.scene.context);
+        this.mouseCursor.render(this.scene.context); 
     }
 
     stop() {
@@ -294,3 +291,4 @@ function beacon(x, y, period) {
         clearInterval(this.interval);
     }
 }
+

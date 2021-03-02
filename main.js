@@ -58,8 +58,8 @@ function newScenario(value) {
         scenario = new IdealTrack();
         scenario.start()
     }
-    else if (value == 'occlusion') {
-        scenario = new Occlusion();
+    else if (value == 'torque') {
+        scenario = new TorqueScenario();
         scenario.start()
     }
     else if (value == 'model') {
@@ -76,6 +76,10 @@ function newScenario(value) {
     }
     else if (value == 'beacons') {
         scenario = new BeaconTestScenario();
+        scenario.start();
+    }
+    else if (value == 'rays') {
+        scenario = new RayScenario();
         scenario.start();
     }
     else if (value == 'dev') {

@@ -23,12 +23,27 @@
     <div class='page-container'>
         <div class='content-section'>
             <h2 class='content-section-title'> The SimZone</h2>
+            <select onchange="scenarioChange()" name="Scenario" id='scenario'>
+                <option value="ideal">Ideal chasing</option>
+                <option value='model'>Model based</option>
+                <option value="torque">Torque</option>   
+                <option value="area">Area construction</option>   
+                <option value="graph">Graphs</option>   
+                <option value="beacons" selected>Beacons</option>   
+                <option value="rays">Rays</option>   
+                <option value="dev">In Development</option>                        
+            </select>
             <div>
                 <div>
                     <div class='outlined inline' style='padding: 0px; margin: 0px;'>
                     <canvas id='the-zone' class='' style='padding: 0px; margin: 0px;' width="600" height="400">
                     </canvas>
                     </div>
+
+                    <!-- <div id='control-panel' class='controls inline'>
+                        <h2>Control panel</h2>
+                    </div> -->
+
                     <div id='control-panel' class='controls inline'>
                         <h2>Control panel</h2>
                         <button onclick="startGame()">Restart</button>
@@ -49,17 +64,6 @@
                             <input type='range' min='1' max='10' value='5' class='slider' onchange="speedSliderChange()"
                                 id='speed-slider'>
                         </div>
-                        <select onchange="scenarioChange()" name="Scenario" id='scenario'>
-                            <option value="ideal">Ideal chasing</option>
-                            <option value='model'>Model based</option>
-                            <option value="occlusion">Occlusions</option>   
-                            <option value="area">Area construction</option>   
-                            <option value="graph">Graphs</option>   
-                            <option value="beacons" selected>Beacons</option>   
-                            <option value="rays">Rays</option>   
-                            <option value="dev">In Development</option>                        
-                        </select>
-           
                     </div>
                 </div>
             </div>
