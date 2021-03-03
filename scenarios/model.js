@@ -170,6 +170,35 @@ function Model(timestep, initialState, initialInput)
             [0, - (this.hooke / this.mass * this.timestep), 0,(- this.drag / this.mass * this.timestep), 0, 0],
         ];
 
+        // Original ODE
+        // d2x/dt2 = -k/m * x - b/m * dx/dt
+        // x1 = x
+        // x2 = dx/dt
+        // substitute
+        // d(x1) / dt = x2
+        // d(x2) / dt = -k/m * x1 = b/m * x2
+
+        // 4th order runge kutta
+        let h = this.timestep;
+        let x1 = this.state[0];
+        let x2 = this.state[1];
+
+        let k11 = h * x1;
+        let k12 = h * (- this.hooke / this.mass * x1 - this.drag / this.mass * x2 + 9.8); 
+
+        let k21 = h * (x1 + k11 / 2);
+        let k22 = h * (- this.hooke / this.mass * (x1 + k11 / 2) - this.drag / this.mass * (x2 + k12 / 2) + 9.8); 
+        
+        let k31 = h * (x1 + k21 / 2);
+        let k32 = h * (- this.hooke / this.mass * (x1 + k21 / 2) - this.drag / this.mass * (x2 + k22 / 2) + 9.8); 
+        
+        let k41 = h * (x1 + k31 / 2);
+        let k42 = h * (- this.hooke / this.mass * (x1 + k31 / 2) - this.drag / this.mass * (x2 + k32 / 2) + 9.8); 
+        
+        this.state[0] = x1 + 1.0 / 6 * (k11 + 2 * k21 + 2 * k31 + k41);
+        this.state[1] = x2 + 1.0 / 6 * (k12 + 2 * k22 + 2 * k32 + k42);
+
+        return;
         // B matrix translates input to state
         this.B = [
             [0, 0],
@@ -203,5 +232,4 @@ function Model(timestep, initialState, initialInput)
             this.state[i] = acc;
         }
     }
-
 }

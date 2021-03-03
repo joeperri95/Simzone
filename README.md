@@ -9,10 +9,11 @@ Inspired by the amazing applets at [falstad.com](http://falstad.com/mathphysics.
 * Simple ideal mouse follower
 * Basic ray tracing 
 * Creating simple graphs
+* Mass spring damper
+* force -> torque
 
 ## TODO
 
-* A dynamic control panel per scenario 
 * Save layouts to json 
 * Centroid function 
 * Customized obstacles

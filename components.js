@@ -39,6 +39,8 @@ function Cursor(color, x, y) {
     this.dx = 0;
     this.dy = 0;    
     this.speed = 5;
+
+
     this.angle = 0;        
 
     this.render = function(ctx) {
@@ -80,9 +82,15 @@ function Rectangle(color, x, y, width, height){
     this.width = width;
     this.height = height;
     this.color = color    
+    this.angle = 0;
     
     this.render = function(ctx){
-        ctx.save();           
+        ctx.save();
+
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.rotate(this.angle);           
+        ctx.translate(- (this.x + this.width / 2), - (this.y + this.height / 2))
+        
         ctx.fillStyle = this.color;        
         ctx.fillRect(this.x, this.y, this.width, this.height)
         
