@@ -33,49 +33,6 @@ function Dot(radius, color, x, y){
     }
 }
 
-function Cursor(color, x, y) {
-    Component.call(this, color, x, y);
-
-    this.dx = 0;
-    this.dy = 0;    
-    this.speed = 5;
-
-
-    this.angle = 0;        
-
-    this.render = function(ctx) {
-        ctx.save();                
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle - Math.PI / 2);
-        ctx.beginPath();
-        
-        ctx.fillStyle = color;
-        ctx.strokeStyle = 'black';      
-
-        // create chevron
-        ctx.moveTo(0, 20);
-        ctx.lineTo(-10,-5);
-        ctx.lineTo(0, 0);
-        ctx.lineTo(10,-5);
-        ctx.lineTo(0,20);
-        
-        ctx.fill()
-        ctx.stroke()
-        ctx.restore();    
-    }
-
-    // Move this class to a model eventually
-    // This is just supposed to be the visualization
-    this.newPos = function(x, y) {                
-        this.dx = x - this.x;
-        this.dy = y - this.y;
-        
-        this.angle = Math.atan2(this.dy, this.dx)       
-        this.x += this.speed * Math.cos(this.angle);
-        this.y += this.speed * Math.sin(this.angle);
-    }
-}
-
 function Rectangle(color, x, y, width, height){
     Component.call(this, color, x, y);
 
@@ -87,9 +44,9 @@ function Rectangle(color, x, y, width, height){
     this.render = function(ctx){
         ctx.save();
 
-        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.translate(this.x, this.y + this.height / 2);
         ctx.rotate(this.angle);           
-        ctx.translate(- (this.x + this.width / 2), - (this.y + this.height / 2))
+        ctx.translate(- (this.x), - (this.y + this.height / 2))
         
         ctx.fillStyle = this.color;        
         ctx.fillRect(this.x, this.y, this.width, this.height)
@@ -157,6 +114,8 @@ function Arrow(color, p1, p2)
 
 }
 
+// The fancy components that are more than just a generic
+
 function InfoText(text, font, point)
 {
 
@@ -170,5 +129,67 @@ function InfoText(text, font, point)
         ctx.fillStyle = 'black';
         ctx.textAlign = 'left';
         ctx.fillText(this.text, point.x, point.y)
+    }
+}
+
+function CentroidIndicator(radius, x, y){
+    Component.call(this, x, y);
+    this.radius = radius              
+
+    this.render = function(ctx) {
+        ctx.save();   
+        
+        ctx.moveTo(this.x, this.y)   
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'black'
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();  
+        ctx.moveTo(this.x, this.y)      
+        ctx.fillStyle = 'black';
+        ctx.arc(this.x, this.y, this.radius, Math.PI / 2, Math.PI);
+        ctx.lineTo(this.x, this.y + this.radius)
+        ctx.lineTo(this.x - this.radius, this.y)        
+        ctx.closePath();       
+        ctx.fill()
+
+        ctx.beginPath();    
+        ctx.moveTo(this.x, this.y)     
+        ctx.fillStyle = 'black';
+        ctx.arc(this.x, this.y, this.radius, 3 * Math.PI / 2, 2 * Math.PI);        
+        ctx.lineTo(this.x, this.y - this.radius)
+        ctx.lineTo(this.x + this.radius, this.y)
+        ctx.closePath();       
+        ctx.fill()
+        
+        ctx.restore();    
+    }
+}
+
+function Cursor(color, x, y) {
+    Component.call(this, color, x, y);    
+    this.angle = 0;        
+
+    this.render = function(ctx) {
+        ctx.save();                
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle - Math.PI / 2);
+        ctx.beginPath();
+        
+        ctx.fillStyle = color;
+        ctx.strokeStyle = 'black';      
+
+        // create chevron
+        ctx.moveTo(0, 20);
+        ctx.lineTo(-10,-5);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(10,-5);
+        ctx.lineTo(0,20);
+        
+        ctx.fill()
+        ctx.stroke()
+        ctx.restore();    
     }
 }

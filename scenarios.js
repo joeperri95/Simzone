@@ -12,12 +12,23 @@ class IdealTrack {
     constructor() {
         this.scene = new Scene();
         this.tracker = new Cursor("red", 0, 0);
+        this.speed = 5;
         this.mouseCursor = new Dot(DOT_SIZE, "green", 0, 0);
+        this.controls = document.getElementById('control-panel');
         this.INTERVAL = 20;
 
     }
 
     start() {
+
+        this.speedSlider = new Slider('speed', 1, 10);
+        this.speedSlider.slider.value = 5;
+        this.speedSlider.slider.addEventListener('change', (event) => {
+            this.speed = event.target.value;
+        })
+        
+        this.controls.innerHTML = '<h2>Control Panel</h2>';
+        this.controls.appendChild(this.speedSlider.container);
 
         this.scene.canvas.addEventListener("mousemove", (event) => {
 
@@ -37,12 +48,24 @@ class IdealTrack {
         );
     }
 
+    newpos(x, y) {
+        let dx = x - this.tracker.x;
+        let dy = y - this.tracker.y;
+        
+        const MIN_DISTANCE = 5;
+        if(Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) > MIN_DISTANCE){
+
+            this.tracker.angle = Math.atan2(dy, dx)       
+            this.tracker.x += this.speed * Math.cos(this.tracker.angle);
+            this.tracker.y += this.speed * Math.sin(this.tracker.angle);
+        }
+    }
+
     update() {
         this.scene.clear();
-        this.tracker.newPos(this.mouseCursor.x, this.mouseCursor.y);
+        this.newpos(this.mouseCursor.x, this.mouseCursor.y);
         this.tracker.render(this.scene.context);
         this.mouseCursor.render(this.scene.context);
-
     }
 
     stop() {
@@ -50,8 +73,6 @@ class IdealTrack {
     }
 
 }
-
-
 
 class CreateAreaScenario {
     constructor() {

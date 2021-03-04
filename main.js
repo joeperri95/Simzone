@@ -82,6 +82,14 @@ function newScenario(value) {
         scenario = new RayScenario();
         scenario.start();
     }
+    else if (value == 'pendulum') {
+        scenario = new PendulumScenario();
+        scenario.start();
+    }
+    else if (value == 'pendulum2') {
+        scenario = new DoublePendulumScenario();
+        scenario.start();
+    }
     else if (value == 'dev') {
         // scenario.start();
     }

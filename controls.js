@@ -56,3 +56,16 @@ function Selection(name, list)
     this.container.appendChild(this.label);
     this.container.appendChild(this.select)
 }
+
+function CheckBox(name, checked)
+{
+    this.container = document.createElement('div');
+    this.label = document.createElement('p');
+    this.label.appendChild(document.createTextNode(name));
+    this.checkbox = document.createElement('input');
+    this.checkbox.type = 'checkbox'
+    this.checkbox.checked = checked;
+    this.checkbox.name = name;
+    this.container.appendChild(this.label);
+    this.container.appendChild(this.checkbox)
+}
