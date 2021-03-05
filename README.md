@@ -11,9 +11,11 @@ Inspired by the amazing applets at [falstad.com](http://falstad.com/mathphysics.
 * Creating simple graphs
 * Mass spring damper
 * force -> torque
+* pendulum simulation
 
 ## TODO
 
 * Save layouts to json 
 * Centroid function 
 * Customized obstacles
+* pan/zoom

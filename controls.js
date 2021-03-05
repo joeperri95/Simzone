@@ -69,3 +69,11 @@ function CheckBox(name, checked)
     this.container.appendChild(this.label);
     this.container.appendChild(this.checkbox)
 }
+
+function Button(name)
+{
+    this.container = document.createElement('div');    
+    this.btn = document.createElement('button');
+    this.btn.innerHTML = name        
+    this.container.appendChild(this.btn)
+}

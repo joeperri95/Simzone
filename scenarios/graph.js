@@ -10,15 +10,27 @@ class GraphScenario {
         this.held = false;
         this.moved = false;
         this.directed = false;
+        this.controls = document.getElementById('control-panel');
         this.INTERVAL = 20;
     }
 
     start = function () {
 
+        this.chk_directed = new CheckBox('directed', false);
+        
+
+        this.chk_directed.checkbox.addEventListener('input', (event) => {
+            this.directed = this.chk_directed.checkbox.checked;            
+        })
+
+        this.controls.innerHTML = '<h2>Control Panel</h2>';
+        this.controls.appendChild(this.chk_directed.container)
+
         this.scene.canvas.addEventListener('mousemove', (event) => {
 
             var mouse = getCursorPosition(this.scene.canvas, event);
-
+            
+        
             if (this.selected != null) {
                 if (this.held) {
                     this.selected.setPos(mouse)

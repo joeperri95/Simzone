@@ -3,7 +3,7 @@ var SPEED = 10;
 const NUM_STATIONS = 5
 const NUM_OBSTACLES = 1;
 const CANVAS_WIDTH = 800
-const CANVAS_HEIGHT = 400
+const CANVAS_HEIGHT = 800
 const DOT_SIZE = 5;
 
 var scenario;
@@ -46,7 +46,6 @@ function scenarioChange() {
     let value = scenarioChoice.value;
     newScenario(value);
 }
-
 
 function newScenario(value) {
     if (scenario != null) {

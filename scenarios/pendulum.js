@@ -64,7 +64,7 @@ class PendulumScenario {
         
         this.model.update();                
 
-    
+        this.body.pivot = this.pivot;
         this.body.angle = this.model.state[0];
         this.body.render(this.scene.context);
         this.pivot.render(this.scene.context);
