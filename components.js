@@ -62,6 +62,35 @@ function Rectangle(color, x, y, width, height){
     }
 }
 
+function RectangleView(color, x, y, width, height){
+    Component.call(this, color, x, y);
+
+    this.width = width;
+    this.height = height;
+    this.color = color    
+
+    this.angle = 0;
+
+    // point to rotate about
+    this.pivot = {x: this.x + this.width / 2, y: this.y + this.height / 2};
+
+    this.render = function(ctx){
+        ctx.save();
+
+        ctx.translate(this.pivot.x, this.pivot.y);
+        ctx.rotate(this.angle);           
+        ctx.translate(- (this.pivot.x), - (this.pivot.y))
+        
+        ctx.fillStyle = this.color;        
+        ctx.fillRect(this.x, this.y, this.width, this.height)
+        
+        ctx.strokeStyle = 'black'
+        ctx.strokeRect(this.x, this.y, this.width, this.height)
+
+        ctx.restore();    
+    }
+}
+
 function Point(x, y)
 {
     this.x = x;
@@ -137,7 +166,7 @@ function InfoText(text, font, point)
 }
 
 function CentroidIndicator(radius, x, y){
-    Component.call(this, x, y);
+    Component.call(this,'white', x, y);
     this.radius = radius              
 
     this.render = function(ctx) {

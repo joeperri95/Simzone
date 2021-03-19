@@ -14,13 +14,9 @@ class DoublePendulumScenario {
         this.scene.context.translate(- CANVAS_WIDTH / 2, -CANVAS_HEIGHT / 2);
 
         // abstract the drawing into a view class
-        this.body1 = new Rectangle('grey', 400, 400, 250, 20);
-        this.pivot1 = new Dot(5, 'white', 400, 410);
-        this.center1 = new CentroidIndicator(5, 625, 110);
-        this.body2 = new Rectangle('grey', 750, 400, 250, 20);
-        this.pivot2 = new Dot(5, 'white', 750, 410);
-        this.center2 = new CentroidIndicator(5, 475, 110);
-        this.model = new DoublePendulumModel(0, 1 / 180, 0, 0);
+        this.pend1 = new pendulum(400, 400, 0, 100, 20, 10);
+        this.pend2 = new pendulum(400, 500, 0, 100, 20, 10);
+        this.model = new DoublePendulumModel(0, 0, 0, 0);
         this.controls = document.getElementById('control-panel');
 
         this.INTERVAL = 20;
@@ -42,7 +38,6 @@ class DoublePendulumScenario {
             let state = this.model.state;
             this.model = new DoublePendulumModel(state[0], state[1], 0, 0);
             this.start();
-
         })
 
         this.theta1Range.slider.addEventListener('change', (event) => {
@@ -93,7 +88,7 @@ class DoublePendulumScenario {
     update = function () {
         this.scene.clear();
         this.model.update();
-
+/*
         let angle1 = 3 * Math.PI / 2 + this.model.state[0];
         this.body1.angle = angle1//3* Math.PI / 2 + this.model.state[0];
         this.body1.pivot = this.pivot1;
@@ -117,11 +112,24 @@ class DoublePendulumScenario {
         this.center2.setPos({ x: this.model.x2 + this.pivot1.x, y: this.model.y2 + this.pivot1.y });
         this.center2.render(this.scene.context)
         drawArrow(this.scene.context, this.center2, { x: this.center2.x, y: this.center2.y - 100 }, 'blue');
+*/
+        this.pend1.angle = 3 * Math.PI / 2 + this.model.state[0];
+        this.pend1.rodView.color = 'red';
+        this.pend1.update();
+
+        this.pend2
+        this.pend2.angle = 3 * Math.PI / 2 + this.model.state[1];
+        this.pend2.update();
+
+        this.pend2.render(this.scene.context);
+        this.pend1.render(this.scene.context);
 
     };
 }
 
 function DoublePendulumModel(theta1, theta2, w1, w2) {
+
+    //pendulum1, pendulum2;
 
     let t1 = theta1// - Math.PI
     let t2 = theta2// - Math.PI
@@ -220,34 +228,40 @@ function DoublePendulumModel(theta1, theta2, w1, w2) {
     }
 }
 
-
-function pendulum(x, y, theta) {
+function pendulum(x, y, angle, length, width, mass) {
 
     this.x = x;
     this.y = y;
+    this.angle = angle
+    
+    this.length = length; // length of the rod
+    this.width = width;   // width of rod
+    this.mass = mass;
+    this.friction= 0;     // pivot friction
+    this.hooke=0;         // pivot spring constant
+    
+    this.pivotView = new Dot(5, 'white', this.x , this.y + this.width / 2);
+    this.centerView = new CentroidIndicator(5, this.x + this.length / 2 * Math.cos(angle), this.y + this.width /2 + this.length / 2 * Math.sin(angle))
+    this.rodView = new Rectangle('grey', x, y, this.length, this.width);
+    this.rodView.pivot = {x: this.pivotView.x, y: this.pivotView.y};
+    this.rodView.angle = angle;
+    this.state = [angle, 0];
 
-    this.size;      // length of the rod
-    this.thickness; // thickness of rod
-    this.mass;
-    this.pivotView = new Dot(5, 'white', this.x, this.y);
-    this.centerView = new CentroidIndicator(5, this.x + this.size * Math.sin(theta), this.y + this.size * Math.cos(theta))
-    this.rodView = new Rectangle('grey', x, y, this.size, this.thickness);
-    this.state = [theta, 0];
+    this.setPos = function(point) {
+        
+    }
 
     this.update = function () {
-        // 
-
+        this.centerView.setPos( new Point(this.x + this.length / 2 * Math.cos(this.angle), this.y + this.width /2 + this.length / 2 * Math.sin(this.angle)));
+        this.rodView.angle = this.angle;
     }
 
     this.render = function (ctx) {
-
         this.rodView.render(ctx);
         this.pivotView.render(ctx)
         this.centerView.render(ctx);
     }
-
 }
-
 
 function log(str) {
     if (logging) {
