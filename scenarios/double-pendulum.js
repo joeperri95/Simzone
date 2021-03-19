@@ -1,7 +1,4 @@
-var logging = true;
 var paused = false;
-
-// I need a controller class to wrangle coords between model and view
 
 class DoublePendulumScenario {
     constructor() {
@@ -10,12 +7,12 @@ class DoublePendulumScenario {
         // Transform the view such that theta is the angle from straight down
         // This doesn't affect the calculations just how the objects are rendered
         this.scene.context.translate(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-        this.scene.context.rotate(Math.PI)
+        this.scene.context.rotate(Math.PI / 2)
         this.scene.context.translate(- CANVAS_WIDTH / 2, -CANVAS_HEIGHT / 2);
 
         // abstract the drawing into a view class
-        this.pend1 = new pendulum(400, 400, 0, 100, 20, 10);
-        this.pend2 = new pendulum(400, 500, 0, 100, 20, 10);
+        this.pend1 = new pendulum(400, 400, 0, 100, 20);
+        this.pend2 = new pendulum(400, 500, 0, 100, 20);
         this.model = new DoublePendulumModel(0, 0, 0, 0);
         this.controls = document.getElementById('control-panel');
 
@@ -88,41 +85,22 @@ class DoublePendulumScenario {
     update = function () {
         this.scene.clear();
         this.model.update();
-/*
-        let angle1 = 3 * Math.PI / 2 + this.model.state[0];
-        this.body1.angle = angle1//3* Math.PI / 2 + this.model.state[0];
-        this.body1.pivot = this.pivot1;
-        this.body1.render(this.scene.context);
-        this.pivot1.render(this.scene.context);
 
-        this.center1.setPos({ x: this.model.x1 + this.pivot1.x, y: this.model.y1 + this.pivot1.y });
-        this.center1.render(this.scene.context)
-        drawArrow(this.scene.context, this.center1, { x: this.center1.x, y: this.center1.y - 100 }, 'red');
-
-        let angle2 = 3 * Math.PI / 2 + this.model.state[1];
-
-        this.pivot2.setPos({ x: this.pivot1.x + this.model.l1 * Math.sin(this.model.state[0]), y: this.pivot1.y - this.model.l1 * Math.cos(this.model.state[0]) })
-        this.pivot2.render(this.scene.context);
-
-        this.body2.angle = angle2 //3* Math.PI / 2 + this.model.state[2];
-        this.body2.pivot = this.pivot2;
-        this.body2.setPos({ x: this.pivot2.x - 10, y: this.pivot2.y - 10 })
-        this.body2.render(this.scene.context);
-
-        this.center2.setPos({ x: this.model.x2 + this.pivot1.x, y: this.model.y2 + this.pivot1.y });
-        this.center2.render(this.scene.context)
-        drawArrow(this.scene.context, this.center2, { x: this.center2.x, y: this.center2.y - 100 }, 'blue');
-*/
-        this.pend1.angle = 3 * Math.PI / 2 + this.model.state[0];
-        this.pend1.rodView.color = 'red';
+        this.pend1.angle = this.model.state[0];        
         this.pend1.update();
-
-        this.pend2
-        this.pend2.angle = 3 * Math.PI / 2 + this.model.state[1];
+        
+        this.pend2.angle =this.model.state[1];
+        
+        this.pend2.setPos(new Point(this.pend1.x + this.pend1.length * Math.cos(this.model.state[0]), this.pend1.y + this.pend1.length * Math.sin(this.model.state[0])));
         this.pend2.update();
 
-        this.pend2.render(this.scene.context);
         this.pend1.render(this.scene.context);
+        this.pend2.render(this.scene.context);
+
+        // draw force arrow. Possibly move this to the pendulum too?
+        const forceScale = 10;
+        drawArrow(this.scene.context, this.pend2.centerView, { x: this.pend2.centerView.x + forceScale * this.model.m2, y: this.pend2.centerView.y  }, 'blue');
+        drawArrow(this.scene.context, this.pend1.centerView, { x: this.pend1.centerView.x + forceScale * this.model.m1, y: this.pend1.centerView.y  }, 'red');
 
     };
 }
@@ -156,7 +134,6 @@ function DoublePendulumModel(theta1, theta2, w1, w2) {
     this.x2 = this.l1 * Math.sin(t1) + this.l2 / 2 * Math.sin(t2)
     this.y2 = - this.l1 * Math.cos(t1) - this.l2 / 2 * Math.cos(t2)
 
-
     this.update = function () {
 
         // state is x, y, theta, omega
@@ -164,7 +141,6 @@ function DoublePendulumModel(theta1, theta2, w1, w2) {
 
         let theta1 = this.state[0]
         let theta2 = this.state[1]
-
 
         let l1 = this.l1;
         let l2 = this.l2;
@@ -228,46 +204,6 @@ function DoublePendulumModel(theta1, theta2, w1, w2) {
     }
 }
 
-function pendulum(x, y, angle, length, width, mass) {
-
-    this.x = x;
-    this.y = y;
-    this.angle = angle
-    
-    this.length = length; // length of the rod
-    this.width = width;   // width of rod
-    this.mass = mass;
-    this.friction= 0;     // pivot friction
-    this.hooke=0;         // pivot spring constant
-    
-    this.pivotView = new Dot(5, 'white', this.x , this.y + this.width / 2);
-    this.centerView = new CentroidIndicator(5, this.x + this.length / 2 * Math.cos(angle), this.y + this.width /2 + this.length / 2 * Math.sin(angle))
-    this.rodView = new Rectangle('grey', x, y, this.length, this.width);
-    this.rodView.pivot = {x: this.pivotView.x, y: this.pivotView.y};
-    this.rodView.angle = angle;
-    this.state = [angle, 0];
-
-    this.setPos = function(point) {
-        
-    }
-
-    this.update = function () {
-        this.centerView.setPos( new Point(this.x + this.length / 2 * Math.cos(this.angle), this.y + this.width /2 + this.length / 2 * Math.sin(this.angle)));
-        this.rodView.angle = this.angle;
-    }
-
-    this.render = function (ctx) {
-        this.rodView.render(ctx);
-        this.pivotView.render(ctx)
-        this.centerView.render(ctx);
-    }
-}
-
-function log(str) {
-    if (logging) {
-        console.log(str)
-    }
-}
 
 // MATH BELOW
 // you were warned

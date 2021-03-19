@@ -216,7 +216,9 @@ function lineToRect(Astart, Aend, x, y, w, h) {
 
 function lineAngle(a, b) {
 
-    let dy = b.y - a.y
+    // bug here in that positive y is down
+    let dy = a.y - b.y
+    //let dy = b.y - a.y
     let dx = b.x - a.x
 
     return Math.atan2(dy, dx)
@@ -232,4 +234,13 @@ function closerPoint(a, b, target)
 
     return da > db ? db : da;
 
+}
+
+// This is used everywhere
+var logging = true;
+
+function log(str) {
+    if (logging) {
+        console.log(str)
+    }
 }

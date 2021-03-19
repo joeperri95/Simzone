@@ -226,3 +226,47 @@ function Cursor(color, x, y) {
         ctx.restore();    
     }
 }
+
+
+function pendulum(x, y, angle, length, width) {
+
+    this.x = x;
+    this.y = y;
+    this.angle = angle
+    
+    this.length = length; // length of the rod
+    this.width = width;   // width of rod    
+    this.friction= 0;     // pivot friction
+    this.hooke=0;         // pivot spring constant
+    
+    this.pivotView = new Dot(5, 'white', this.x , this.y + this.width / 2);
+    this.centerView = new CentroidIndicator(5, this.x + this.length / 2 * Math.cos(angle), this.y + this.width /2 + this.length / 2 * Math.sin(angle))
+    this.rodView = new Rectangle('grey', x, y, this.length, this.width);
+    this.rodView.pivot = {x: this.pivotView.x, y: this.pivotView.y};
+    this.rodView.angle = angle;
+    this.state = [angle, 0];
+
+    this.setPos = function(point) {
+        // change origin point
+        // this is used for the second pendulum who's position depends on the first
+
+        this.x = point.x;
+        this.y = point.y;
+        this.pivotView.x = point.x;
+        this.pivotView.y = point.y + this.width / 2;
+        this.rodView = new Rectangle('grey', point.x, point.y, this.length, this.width);
+        this.rodView.pivot = {x: this.pivotView.x, y: this.pivotView.y};
+    }
+
+    this.update = function () {
+        this.centerView.setPos( new Point(this.x + this.length / 2 * Math.cos(this.angle), this.y + this.width /2 + this.length / 2 * Math.sin(this.angle)));
+        this.rodView.angle = this.angle;
+    }
+
+    this.render = function (ctx) {
+        this.rodView.render(ctx);
+        this.pivotView.render(ctx)
+        this.centerView.render(ctx);
+    }
+}
+

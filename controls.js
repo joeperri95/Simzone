@@ -23,7 +23,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-function Slider(label, min, max)
+function Slider(label, min, max, start=(max + min)/2)
 {
     this.container = document.createElement('div'); 
     this.label = document.createElement('p');
@@ -33,6 +33,7 @@ function Slider(label, min, max)
     this.slider.type = 'range'
     this.slider.min = min;
     this.slider.max = max;
+    this.slider.value = start;
     this.container.className = 'slider-container'
     this.container.appendChild(this.label)
     this.container.appendChild(this.slider)
