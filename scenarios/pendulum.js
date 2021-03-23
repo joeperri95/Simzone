@@ -1,16 +1,25 @@
 
+<<<<<<< HEAD
 const CENTER = new Point(400, 400);
 const LENGTH = 250;
 const WIDTH = 20;
+=======
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
 
 class PendulumScenario {
     constructor() {
         this.scene = new Scene();
 
         // abstract the drawing into a view class
+<<<<<<< HEAD
         this.pend = new pendulum(CENTER.x, CENTER.y, 0, LENGTH, WIDTH);
         this.motor = 0; // motor torque   
         this.model = new PendulumModel(LENGTH, WIDTH, 0);        
+=======
+        this.pend = new pendulum(400, 400, 0, 250, 20);
+        this.motor = 0; // motor torque   
+        this.model = new PendulumModel(100, 110, 250, 20, 0);        
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         this.pid = new PIDController(10, 1, 1, 0);
         this.controls = document.getElementById('control-panel');
         this.INTERVAL = 20;
@@ -18,22 +27,35 @@ class PendulumScenario {
 
     start = function () {
 
+<<<<<<< HEAD
         this.momentRange = new SliderInput('moment', 1, 1000, 50);
         this.frictionRange = new SliderInput('friction', 1, 100, 10);
         this.motorRange = new SliderInput('motor power', 0, 100, 0);
         this.kpRange = new SliderInput('Kp', 1, 100, 10);
         this.kiRange = new SliderInput('Ki', 1, 100, 1);
         this.kdRange = new SliderInput('Kd', 1, 100, 2);
+=======
+        this.momentRange = new Slider('moment', 1, 1000, 50);
+        this.frictionRange = new Slider('friction', 1, 100, 10);
+        this.motorRange = new Slider('motor power', 0, 100, 2);
+        this.kpRange = new Slider('Kp', 1, 100, 10);
+        this.kiRange = new Slider('Ki', 1, 100, 1);
+        this.kdRange = new Slider('Kd', 1, 100, 2);
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         this.logBox = new CheckBox('logs', logging);
         
         // these are used in a workaround of the discontinuity at 2pi 
         this.quadrant = 0;
         this.lastQuadrant;
 
+<<<<<<< HEAD
         // motor initially disabled
         this.motorRange.slider.classList.add('red-slider');
 
         this.momentRange.addListeners('change', (event) => {
+=======
+        this.momentRange.slider.addEventListener('change', (event) => {
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
             this.model.moment = event.target.value;
         })
 
@@ -41,6 +63,7 @@ class PendulumScenario {
             this.model.friction = event.target.value;
         })
 
+<<<<<<< HEAD
         this.motorRange.addListeners('change', (event) => {
             this.motor = this.motorRange.value;            
             if(this.motor == 0){
@@ -49,11 +72,16 @@ class PendulumScenario {
             else{
                 this.motorRange.slider.classList.remove('red-slider');
             }
+=======
+        this.motorRange.slider.addEventListener('change', (event) => {
+            this.motor = event.target.value;
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         })
 
         this.logBox.checkbox.addEventListener('change', (event) => {            
             logging = this.logBox.checkbox.checked;            
         })
+<<<<<<< HEAD
         this.kpRange.addListeners('change', (event) => {
             this.pid.kp = event.target.value;
         })
@@ -61,6 +89,15 @@ class PendulumScenario {
             this.pid.ki = event.target.value;
         })
         this.kdRange.addListeners('change', (event) => {
+=======
+        this.kpRange.slider.addEventListener('change', (event) => {
+            this.pid.kp = event.target.value;
+        })
+        this.kiRange.slider.addEventListener('change', (event) => {
+            this.pid.ki = event.target.value;
+        })
+        this.kdRange.slider.addEventListener('change', (event) => {
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
             this.pid.kd = event.target.value;
         })
 
@@ -73,6 +110,7 @@ class PendulumScenario {
         this.controls.appendChild(this.kdRange.container);      
         this.controls.appendChild(this.logBox.container);        
             
+<<<<<<< HEAD
         // use mouse to set the target
         this.scene.canvas.addEventListener("mousemove", (event) => {
             var mouse = getCursorPosition(this.scene.canvas, event);            
@@ -114,6 +152,24 @@ class PendulumScenario {
             this.pid.target = angle;
         })
 
+=======
+        this.scene.canvas.addEventListener("mousemove", (event) => {
+            var mouse = getCursorPosition(this.scene.canvas, event);            
+            let angle = lineAngle(new Point(400, 400), mouse);
+            
+            if(angle < 0){
+                angle = Math.abs(angle);
+            }
+            else{
+                angle = Math.PI * 2 - angle;
+            }
+            //angle = angle % Math.PI * 2;
+            
+            log(`angle ${angle}`);
+            this.pid.target = angle;
+        })
+
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
             (function (self) {
@@ -184,14 +240,23 @@ function PIDController(p, i, d, target) {
             this.errorList.push(error);
         }
 
+<<<<<<< HEAD
         var output = error * this.kp + integral * this.ki + derivative * this.kd;             
+=======
+        var output = error * this.kp + integral * this.ki + derivative * this.kd;     
+        //log(`output ${output}`)   
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         return output;
 
     }
 
 }
 
+<<<<<<< HEAD
 function PendulumModel(w, h, angle) {
+=======
+function PendulumModel(x, y, w, h, angle) {
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
     
     this.width = w;
     this.height = h;
@@ -223,6 +288,10 @@ function PendulumModel(w, h, angle) {
         // gravitational torque
         let Torque = - 9.8 / (this.width / 2) * Math.sin( 3* Math.PI / 2 - this.state[0]);
         
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 17800bcb5625f06c1caa2cf3d9a908005ff2b690
         Torque += this.input / this.moment * this.motor;
         
         let x1 = this.state[0];
