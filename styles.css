@@ -65,7 +65,7 @@ body{
 }
 
 .red {
-    color: red;
+    color: red;    
 }
 
 .hidden {
@@ -109,3 +109,26 @@ body{
     border-style: solid;
     border-color: 'black';
 }
+
+.control-input {
+    
+}
+
+.slider{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90%;
+  height: 2px;
+  margin: 10px 0px;;
+  background: #1F1F1F; /* Grey background */  
+} 
+
+.red-slider::webkit-slider-thumb {    
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    background: red;
+} 
+
+.red-slider::-moz-range-thumb {        
+    background: red; 
+  }

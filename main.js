@@ -37,9 +37,7 @@ function Scene() {
 }
 
 function ControlPanel() {
-
     this.panel = document.getElementById("control-panel")
-
 }
 
 function scenarioChange() {
@@ -63,6 +61,10 @@ function newScenario(value) {
     }
     else if (value == 'model') {
         scenario = new ModelScenario();
+        scenario.start();
+    }
+    else if (value == 'msd') {
+        scenario = new MSDScenario();
         scenario.start();
     }
     else if (value == 'area') {

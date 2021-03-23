@@ -12,6 +12,7 @@
     <script src='scenarios/rays.js'></script>
     <script src='scenarios/torque.js'></script>
     <script src='scenarios/model.js'></script>
+    <script src='scenarios/msd.js'></script>
     <script src='scenarios/pendulum.js'></script>
     <script src='scenarios/double-pendulum.js'></script>
     <script src='main.js'></script>
@@ -28,13 +29,14 @@
             <h2 class='content-section-title'> The SimZone</h2>
             <select onchange="scenarioChange()" name="Scenario" id='scenario'>
                 <option value="ideal">Ideal chasing</option>
-                <option value='model'>Model based</option>
+                <option value='model'>Model Based</option>
+                <option value='msd'>Mass Spring Damper</option>
                 <option value="torque">Torque</option>   
                 <option value="area">Area construction</option>   
                 <option value="graph">Graphs</option>   
-                <option value="beacons" selected>Beacons</option>   
+                <option value="beacons">Beacons</option>   
                 <option value="rays">Rays</option>   
-                <option value="pendulum">Pendulum</option>  
+                <option value="pendulum" selected>Pendulum</option>  
                 <option value="pendulum2">Pendulum 2</option>  
                 <option value="dev">In Development</option>  
                                       

@@ -1,47 +1,27 @@
-'use-strict'
-
-var scale = 10;
 
 class ModelScenario {
+
     constructor() {
         this.scene = new Scene();
-        this.tracker = new Tracker([100, 100]);        
+        this.tracker = new Cursor("red", 100, 100);
+        this.truth = new Cursor("green", 100, 100);            
+        this.model = new DynamicsModel(new Point(100, 100), 0);
         this.controls = document.getElementById('control-panel');
         this.INTERVAL = 20;
+
     }
+
     start() {
 
-        this.massRange = new Slider('mass', 1, 100);
-        this.dragRange = new Slider('drag', 1, 100);
-        this.hookeRange = new Slider('hooke', 1, 100);        
-
         this.controls.innerHTML = '<h2>Control Panel</h2>';
-        this.controls.appendChild(this.massRange.container);
-        this.controls.appendChild(this.dragRange.container);
-        this.controls.appendChild(this.hookeRange.container);        
         
-        this.massRange.slider.addEventListener('change', (event) => {            
-            this.tracker.model.mass = event.target.value;
+        window.addEventListener('keydown', (event) => {            
+            this.handleKeyDown(event);
         })
 
-        this.dragRange.slider.addEventListener('change', (event) => {            
-            this.tracker.model.drag = event.target.value;
+        window.addEventListener('keyup', (event) => {            
+            this.handleKeyUp(event);
         })
-
-        this.hookeRange.slider.addEventListener('change', (event) => {            
-            this.tracker.model.hooke = event.target.value;
-        })
-
-        this.scene.canvas.addEventListener('wheel', (event) => {
-            if(event.deltaY > 0){
-                scale += 1
-            }
-            else if(event.deltaY < 0){
-                scale -= 1
-            }
-            event.preventDefault();
-            console.log(scale);
-        }, false)
 
         // https://stackoverflow.com/a/2749272/14591588        
         this.interval = setInterval(
@@ -54,11 +34,49 @@ class ModelScenario {
         );
     }
 
+    handleKeyDown(event) {
+        const ACCEL = 10;
+        const TORQUE = 1;
+        const MAX_ACCEL = 100;
+        const MAX_TORQUE = 10;
+
+
+        if(event.key == 'w'){
+            this.model.input = this.model.input >= MAX_ACCEL ? MAX_ACCEL : this.model.input + ACCEL;
+        }
+        else if(event.key == 'a'){
+            this.model.torque = this.model.torque >= MAX_TORQUE ? MAX_TORQUE : this.model.torque + TORQUE;
+        }
+        else if(event.key == 's'){
+            this.model.input = this.model.input <= - MAX_ACCEL ? - MAX_ACCEL : this.model.input - ACCEL;
+        }
+        else if(event.key == 'd'){
+            this.model.torque = this.model.torque <= - MAX_TORQUE ? - MAX_TORQUE : this.model.torque - TORQUE;
+        }
+    }
+
+    handleKeyUp(event) {        
+
+        if(event.key == 'w'){
+            this.model.input = 0;
+        }
+        else if(event.key == 'a'){
+            this.model.torque = 0;
+        }
+        else if(event.key == 's'){
+            this.model.input = 0;
+        }
+        else if(event.key == 'd'){
+            this.model.torque = 0;
+        }
+    }
+
     update() {
-        this.scene.clear();
-        this.tracker.update();
+        this.scene.clear();        
+        this.model.update();
+        this.tracker.setPos(this.model.position);
+        this.tracker.angle = this.model.angle;
         this.tracker.render(this.scene.context);        
-        // console.log(this.tracker.state);        
     }
 
     stop() {
@@ -66,170 +84,114 @@ class ModelScenario {
     }
 }
 
-
-function Tracker(wordCoords)
+function DynamicsView()
 {
-    // controller class for a physical model and it's visual representation
 
-    this.view = new Dot(5, 'red', 0, 0);
-    this.timestep = 20;
-    this.worldCoords = wordCoords;
-    this.previousPoints = [];
-    this.model = new Model(this.timestep, [0, 0, 0, 0, 0, 0], [0, 9.8 * 10]);
-    this.state;
-
-    this.update = function() {
-        this.model.update();
-        this.state = this.model.getOutput();  
-        this.state.x += this.worldCoords[0];
-        this.state.y += this.worldCoords[1];
-        this.previousPoints.push(this.state);
-        this.view.setPos(this.state);        
-    }
-
-    this.render = function(ctx){
-        const SCALE = 1 //* this.model.C[0];
-        drawArrow(ctx, this.state, {x: this.state.x + SCALE * (- this.model.hooke * this.model.state[0]) , y: this.state.y + SCALE * (( - this.model.hooke * this.model.state[1])) }, 'red');        
-        drawArrow(ctx, this.state, {x: this.state.x + SCALE * this.model.state[4] , y: this.state.y + SCALE * this.model.state[5] }, 'black');        
-        drawArrow(ctx, this.state, {x: this.state.x + SCALE * this.model.input[0] , y: this.state.y + SCALE *  this.model.input[1]}, 'green');
-        drawline(ctx, {x: 0, y: this.worldCoords[1]}, {x: CANVAS_WIDTH, y: this.worldCoords[1]}, 'black')
-
-        if(this.previousPoints.length >= 2){
-            for(let i = 1; i < this.previousPoints.length; i++){
-                drawline(ctx, {x: this.worldCoords[0] + this.previousPoints.length -  i - 1 , y: this.previousPoints[i - 1].y}, {x: this.worldCoords[0] + this.previousPoints.length - i, y : this.previousPoints[i].y}, 'black');
-            }
-        }
-        if(this.previousPoints.length >= CANVAS_WIDTH - this.worldCoords[1]){
-            this.previousPoints.shift();
-        }
-
-        this.view.render(ctx)
-    }
 }
 
-function Model(timestep, initialState, initialInput)
+function DynamicsModel(start, angle)
 {
-    // input is Fx, Fy
-    this.input = initialInput; 
-    this.timestep = timestep / 1000.0;
-    this.state = initialState;
-    // Physical parameters of the model
-    this.mass = 10;
-    this.drag = 1;
-    this.hooke = 5;
+    this.position = start;
+    this.angle = angle;
+    this.timestep = 20 / 1000;
 
-    this.A = [];
-    this.B = [];
-
-    // C matrix translates state to ouput
-    // This can be used to scale output to better fit the display
-    // this.C = [
-    //     0.001, 0.001, 0.001, 0.001, 0.001, 0.001
-    // ];
-
-    // one pixel is one m
-    // this.C = [
-    //     1, 1, 1, 1, 1, 1
-    // ];
-
-    // one pixel is one cm 
-    this.C = [
-        100, 100, 100, 100, 100, 100
-    ];
-
-    this.getOutput = function() {       
-        var result = {
-            x: this.C[0] * this.state[0],
-            y: this.C[1] * this.state[1],
-            vx: this.C[2] * this.state[2],
-            vy: this.C[3] * this.state[3],
-            ax: this.C[4] * this.state[4],
-            ay: this.C[5] * this.state[5]
-        }
-        return result;
-    }
+    // state is x, vx, y, vy, theta, omega
+    this.state = [start.x, 0, start.y, 0, angle, 0];
+    this.input = 0;
+    this.torque = 0;
 
     this.update = function() {
-        var oldState = [];        
-        var acc;
 
-        this.input[1] = 9.8 * this.mass;
+        
+        this.hooke = 0;
+        this.drag = 1;
+        this.rotDrag = 10;
+        this.mass = 10;
 
-        for(let i = 0; i < this.C.length; i++){
-            this.C[i] = scale;
-        }
+        // Governing differntial equation
+        // d2x / dt2 = - k / m * x - u / m * dx/dt + input / m 
 
-        // A matrix describes system
-        // Use euler method for now
-        this.A = [
-            [1, 0, this.timestep, 0, 0, 0],
-            [0, 1, 0, this.timestep,0 ,0],
-            [0, 0, 1, 0, this.timestep, 0],
-            [0, 0, 0, 1, 0, this.timestep],
-            [- (this.hooke / this.mass * this.timestep), 0, (- this.drag / this.mass * this.timestep), 0, 0, 0],
-            [0, - (this.hooke / this.mass * this.timestep), 0,(- this.drag / this.mass * this.timestep), 0, 0],
-        ];
-
-        // Original ODE
-        // d2x/dt2 = -k/m * x - b/m * dx/dt
         // x1 = x
-        // x2 = dx/dt
-        // substitute
-        // d(x1) / dt = x2
-        // d(x2) / dt = -k/m * x1 = b/m * x2
+        // x2 = dx / dt
 
-        // 4th order runge kutta
-        let h = this.timestep;
+        // dx1 / dt = x2
+        // dx2 / dt = -k / m * x1 - u / m * x2 + input / m
+
+        let h  = this.timestep * 4;
+
         let x1 = this.state[0];
         let x2 = this.state[1];
+        let inputX = this.input * Math.cos(this.state[4]) / this.mass;
 
-        let k11 = h * x1;
-        let k12 = h * (- this.hooke / this.mass * x1 - this.drag / this.mass * x2 + 9.8); 
+        let k11 = h * x2;
+        let k12 = h * (- this.drag / this.mass * x2 + inputX); 
 
-        let k21 = h * (x1 + k11 / 2);
-        let k22 = h * (- this.hooke / this.mass * (x1 + k11 / 2) - this.drag / this.mass * (x2 + k12 / 2) + 9.8); 
+        let k21 = h * (x2 + k11 / 2);
+        let k22 = h * (- this.drag / this.mass * (x2 + k12 / 2) + inputX); 
         
-        let k31 = h * (x1 + k21 / 2);
-        let k32 = h * (- this.hooke / this.mass * (x1 + k21 / 2) - this.drag / this.mass * (x2 + k22 / 2) + 9.8); 
+        let k31 = h * (x2 + k21 / 2);
+        let k32 = h * (- this.drag / this.mass * (x2 + k22 / 2) + inputX); 
         
-        let k41 = h * (x1 + k31 / 2);
-        let k42 = h * (- this.hooke / this.mass * (x1 + k31 / 2) - this.drag / this.mass * (x2 + k32 / 2) + 9.8); 
-        
+        let k41 = h * (x2 + k31 / 2);
+        let k42 = h * (- this.drag / this.mass * (x2 + k32 / 2) + inputX); 
+
         this.state[0] = x1 + 1.0 / 6 * (k11 + 2 * k21 + 2 * k31 + k41);
-        this.state[1] = x2 + 1.0 / 6 * (k12 + 2 * k22 + 2 * k32 + k42);
+        this.state[1] = x2 + 1.0 / 6 * (k12 + 2 * k22 + 2 * k32 + k42);      
 
-        return;
-        // B matrix translates input to state
-        this.B = [
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [this.timestep / this.mass, 0],
-            [0, this.timestep / this.mass]
-        ];
+        // same for y
 
-        // deep copy the state
-        for(i = 0; i < this.state.length; i++){
-            oldState[i] = this.state[i];
-        }
-        for(i = 0; i < this.state.length; i++)
-        {
-            acc = 0;
+        let y1 = this.state[2];
+        let y2 = this.state[3];
+        let inputY = this.input * Math.sin(this.state[4]) / this.mass;
 
-            // Multiply by dynamic matrix
-            for(j = 0; j < this.state.length; j++)
-            {
-                acc += this.A[i][j] * (oldState[j]);                
-            }
-         
-            // Add inputs
-            for(k = 0; k < this.input.length; k++)
-            {
-                acc += this.B[i][k] * this.input[k];
-            }
- 
-            this.state[i] = acc;
-        }
+        k11 = h * y2;
+        k12 = h * (- this.drag / this.mass * y2 + inputY); 
+
+        k21 = h * (y2 + k11 / 2);
+        k22 = h * (- this.drag / this.mass * (y2 + k12 / 2) + inputY); 
+        
+        k31 = h * (y2 + k21 / 2);
+        k32 = h * (- this.drag / this.mass * (y2 + k22 / 2) + inputY); 
+        
+        k41 = h * (y2 + k31 / 2);
+        k42 = h * (- this.drag / this.mass * (y2 + k32 / 2) + inputY); 
+
+        this.state[2] = y1 + 1.0 / 6 * (k11 + 2 * k21 + 2 * k31 + k41);
+        this.state[3] = y2 + 1.0 / 6 * (k12 + 2 * k22 + 2 * k32 + k42); 
+
+        // rotational
+        // d2(theta) / dt2 = -k / I theta -u / I* d(theta) / dt - Torque / I
+        
+        // t1 = theta
+        // t2 = d(theta) / dt
+        // dt1/dt = t2
+        // dt2/dt = -k/I x1 - u/I x2 - Torque / I
+
+        // use I = mass for now
+        // no rotational spring        
+
+        let t1 = this.state[4];
+        let t2 = this.state[5];
+        let inputT = this.torque / this.mass;
+
+        k11 = h * t2;
+        k12 = h * (- this.rotDrag / this.mass * t2 + inputT); 
+
+        k21 = h * (t2 + k11 / 2);
+        k22 = h * (- this.rotDrag / this.mass * (t2 + k12 / 2) + inputT); 
+        
+        k31 = h * (t2 + k21 / 2);
+        k32 = h * (- this.rotDrag / this.mass * (t2 + k22 / 2) + inputT); 
+        
+        k41 = h * (t2 + k31 / 2);
+        k42 = h * (- this.rotDrag / this.mass * (t2 + k32 / 2) + inputT); 
+
+        this.state[4] = t1 + 1.0 / 6 * (k11 + 2 * k21 + 2 * k31 + k41);
+        this.state[5] = t2 + 1.0 / 6 * (k12 + 2 * k22 + 2 * k32 + k42); 
+
+        this.position = new Point(this.state[0], this.state[2]);
+        this.angle = this.state[4];
+
     }
+
 }

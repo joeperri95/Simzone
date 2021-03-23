@@ -216,12 +216,51 @@ function lineToRect(Astart, Aend, x, y, w, h) {
 
 function lineAngle(a, b) {
 
-    let dy = b.y - a.y
+    // bug here in that positive y is down
+    let dy = a.y - b.y
+    //let dy = b.y - a.y
     let dx = b.x - a.x
 
     return Math.atan2(dy, dx)
 }
 
+
+function quadrant(origin, pt) {
+    // find quadrant point is in compared to another point
+
+    // -----------------
+    // |      |       |
+    // |   1  |   0   |
+    // |      |       |
+    // |------|-------|
+    // |      |       |
+    // |   2  |   3   |
+    // |      |       |
+    // ----------------
+
+    if(pt.x > origin.x) 
+    {
+        if(pt.y > origin.y)
+        {
+            return 0;
+        }
+        else
+        {
+            return 3;
+        }
+    }
+    else
+    {
+        if(pt.y > origin.y)
+        {
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
+    }
+}
 
 function closerPoint(a, b, target)
 // of points a and b return the one that is closer to the target
@@ -232,4 +271,13 @@ function closerPoint(a, b, target)
 
     return da > db ? db : da;
 
+}
+
+// This is used everywhere
+var logging = true;
+
+function log(str) {
+    if (logging) {
+        console.log(str)
+    }
 }
