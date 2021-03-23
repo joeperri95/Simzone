@@ -6,12 +6,11 @@ Inspired by the amazing applets at [falstad.com](http://falstad.com/mathphysics.
 
 ## Currently supports
 
-* Simple ideal mouse follower
 * Basic ray tracing 
 * Creating simple graphs
 * Mass spring damper
-* force -> torque
-* pendulum simulation
+* double pendulum simulation
+* single pendulum with PID control 
 
 ## TODO
 
@@ -19,3 +18,4 @@ Inspired by the amazing applets at [falstad.com](http://falstad.com/mathphysics.
 * Centroid function 
 * Customized obstacles
 * pan/zoom
+* A usable UI

@@ -273,6 +273,17 @@ function closerPoint(a, b, target)
 
 }
 
+function drawImage(ctx, src)
+{
+    let img = new Image();
+    img.src = src;
+
+    log(img);
+
+    ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+}
+
+
 // This is used everywhere
 var logging = true;
 
