@@ -3,7 +3,11 @@
 
 <head>
     <title>Joe's site</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <link rel="stylesheet" href='resources/css/styles.css'>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+
     <link href='https://fonts.googleapis.com/css?family=Manuale' rel='stylesheet'>
     <script src='utils.js'></script>
     <script src='components.js'></script>
@@ -25,57 +29,115 @@
 <body onload="startGame()">
 
     <div class='page-container'>
-        <div class='content-section'>
-            <h2 class='content-section-title'> The SimZone</h2>
-            <select onchange="scenarioChange()" name="Scenario" id='scenario'>
-                <option value="ideal">Ideal chasing</option>
-                <option value='model'>Model Based</option>
-                <option value='msd'>Mass Spring Damper</option>
-                <option value="torque">Torque</option>   
-                <option value="area">Area construction</option>   
-                <option value="graph">Graphs</option>   
-                <option value="beacons">Beacons</option>   
-                <option value="rays">Rays</option>   
-                <option value="pendulum" selected>Pendulum</option>  
-                <option value="pendulum2">Pendulum 2</option>  
-                <option value="dev">In Development</option>  
-                                      
-            </select>
-            <div>
-                <div>
-                    <div class='outlined inline' style='padding: 0px; margin: 0px;'>
-                    <canvas id='the-zone' class='' style='padding: 0px; margin: 0px;' width="600" height="400">
-                    </canvas>
+
+        <div class='container-fluid'>
+            <div class='row'>
+                <h1>Cheeky navbar innit</h1>
+            </div>
+            <div class='row g-5'>
+                <div id='sidebar' class='col-auto bg-light outlined'>
+                    <div class="accordion" id="scenarioAccordion">
+                        <div class="accordion-item">
+                          <h2 class="accordion-header" id="headingPendulum">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePendulum" aria-expanded="true" aria-controls="collapsePendulum">
+                              Pendulum
+                            </button>
+                          </h2>
+                          <div id="collapsePendulum" class="accordion-collapse collapse collapsed" aria-labelledby="headingPendulum" data-bs-parent="#scenarioAccordion">
+                            <div class="accordion-body">
+                                <ul class='list-unstyled'>
+                              <li><button class='accordion-button no-check collapsed' onclick="newScenario('pendulum')">Single Pendulum</button></li>
+                              <li><button class='accordion-button no-check collapsed' onclick="newScenario('pendulum2')">Double Pendulum</button></li>
+                                </ul>
+                            </div>
+
+                          </div>
+                        </div>
+                        <div class="accordion-item">
+                          <h2 class="accordion-header" id="headingTracking">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTracking" aria-expanded="false" aria-controls="collapseTracking">
+                              Tracking
+                            </button>
+                          </h2>
+                          <div id="collapseTracking" class="accordion-collapse collapse" aria-labelledby="headingTracking" data-bs-parent="#scenarioAccordion">
+                            <div class="accordion-body">
+                                <ul class='list-unstyled'>
+                                    <li><button class='accordion-button no-check collapsed' onclick="newScenario('ideal')">Ideal Tracking</button></li>
+                                    <li><button class='accordion-button no-check collapsed' onclick="newScenario('model')">Model Based</button></li>
+                                </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="accordion-item">
+                          <h2 class="accordion-header" id="headingRays">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRays" aria-expanded="false" aria-controls="collapseRays">
+                              Rays
+                            </button>
+                          </h2>
+                          <div id="collapseRays" class="accordion-collapse collapse" aria-labelledby="headingRays" data-bs-parent="#scenarioAccordion">
+                            <div class="accordion-body">
+                                <ul class='list-unstyled'>
+                                <li><button class='accordion-button no-check collapsed' onclick="newScenario('rays')">Rays</button></li>
+                                <li><button class='accordion-button no-check collapsed' onclick="newScenario('beacons')">Beacons</button></li>
+                            </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class='accordion-header' id='headingGraph'> 
+                                <a href='#' style='text-decoration: none;'>
+                                <button class="accordion-button no-check collapsed" type="button" onclick="newScenario('graph')">
+                                    Graph
+                                </button>
+                            </a>
+                            </h2>
+                        </div>
+                      </div>
+                </div>
+                <div id ='content' class='col-auto'>
+                    <div id = 'title-row' class='row'>
+                        <div class='col-auto'>
+                            <h2 id='page-title'> The SimZone</h2>
+                        </div>
+                    </div>
+                    <div id='global-controls' class='row p-3'>
+                        <div class='col-auto'>
+                            <!-- <select class='' onchange="scenarioChange()" name="Scenario" id='scenario'>
+                                <option value="ideal">Ideal chasing</option>
+                                <option value='model'>Model Based</option>
+                                <option value='msd'>Mass Spring Damper</option>
+                                <option value="torque">Torque</option>
+                                <option value="area">Area construction</option>
+                                <option value="graph">Graphs</option>
+                                <option value="beacons">Beacons</option>
+                                <option value="rays">Rays</option>
+                                <option value="pendulum" selected>Pendulum</option>
+                                <option value="pendulum2">Pendulum 2</option>
+                                <option value="dev">In Development</option>
+                            </select> -->
+                        </div>
+                        <div class='col-auto'>
+                            <!-- <button class='btn btn-danger'>Reset</button> -->
+                        </div>
+                    </div>
+                    <div class='row gx-5'>
+                        <div id='canvas-panel' class='col-md-auto'>
+                            <canvas id='the-zone' class='outlined' style='padding: 0px; margin: 0px;' width="600"
+                                height="400">
+                            </canvas>
+                        </div>
+
+                        <div id='control-panel' class='bg-light col-auto '>
+                            <button onclick="startGame()">Restart</button>
+                        </div>
                     </div>
 
-                    <!-- <div id='control-panel' class='controls inline'>
-                        <h2>Control panel</h2>
-                    </div> -->
 
-                    <div id='control-panel' class='controls inline'>
-                        <h2>Control panel</h2>
-                        <button onclick="startGame()">Restart</button>
-                        <button id='clear-button'>Clear</button>
-                        <select name="Tool" id='tool'>
-                            <option value="normal" selected>Normal</option>
-                            <option value="beacon">Beacon</option>
-                            <option value="obstacle">Obstacle</option>
-                            <option value="polygon">Polygon</option>
-                        </select>
-                        <div class='slider-container'>
-                            <p>Number of rays</p>
-                            <input type='range' min='1' max='360' value='10' class='slider' onchange="raySliderChange()"
-                                id='ray-slider'>
-                        </div>
-                        <div class='slider-container'>
-                            <p>Propagation speed</p>
-                            <input type='range' min='1' max='10' value='5' class='slider' onchange="speedSliderChange()"
-                                id='speed-slider'>
-                        </div>
-                    </div>
                 </div>
             </div>
+
         </div>
+
     </div>
 
 </body>

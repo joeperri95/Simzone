@@ -43,7 +43,7 @@ function Slider(label, min, max, start=(max + min)/2)
 function SliderInput(label, min, max, start=(max + min)/2)
 {
     this.container = document.createElement('div'); 
-    this.label = document.createElement('p');
+    this.label = document.createElement('h3');
     this.input = document.createElement('input');
     this.slider = document.createElement('input')
     this.listeners = [];
