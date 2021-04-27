@@ -1,6 +1,14 @@
+.outlined {
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+}
 
 
-
+.accordion-button.no-check::after{
+    background-image: none;
+}
+/* 
 
 body{
     background-color: #808090;
@@ -86,12 +94,6 @@ body{
     
 } 
 
-.outlined {
-    border-color: black;
-    border-width: 2px;
-    border-style: solid;
-}
-
 .content-section-title
 {
     color: black;
@@ -120,15 +122,15 @@ body{
   width: 90%;
   height: 2px;
   margin: 10px 0px;;
-  background: #1F1F1F; /* Grey background */  
+  background: #1F1F1F;
 } 
 
 .red-slider::webkit-slider-thumb {    
-    -webkit-appearance: none; /* Override default look */
+    -webkit-appearance: none;
     appearance: none;
     background: red;
 } 
 
 .red-slider::-moz-range-thumb {        
     background: red; 
-  }
+  } */
